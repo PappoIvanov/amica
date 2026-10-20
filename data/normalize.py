@@ -61,7 +61,7 @@ def fix_homoglyphs(text, log):
         return word
     return WORD.sub(repl, text)
 
-def normalize_text(text, log):
+def normalize_text(text, log, english=False):
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     # NFC: една буква = един знак (напр. "й" да не е "и" + отделен знак за кратката "и")
     text = unicodedata.normalize("NFC", text)
@@ -69,6 +69,8 @@ def normalize_text(text, log):
     if n:
         log["accent"] += n
     for bad, good, name in REPLACEMENTS:
+        if english and "кавички" in name:
+            continue
         n = text.count(bad)
         if n:
             log[name] += n
@@ -79,15 +81,16 @@ def normalize_text(text, log):
         log["slash with spaces"] += n
         text = text.replace(" - ", " — ")   # тире с интервали и тире за диалог, не чертичка в дума
     
-    text, n = STRAIGHT_QUOTES.subn(r"„\1“", text)
-    if n:
-        log["straight quotes"] += n
-    
-    text, n = OPENING_QUOTE.subn(r"\1„", text)
-    if n:
-        log["opening quote “"] += n
+    if not english:                              # българските кавички „“ само за български текст
+        text, n = STRAIGHT_QUOTES.subn(r"„\1“", text)
+        if n:
+            log["straight quotes"] += n
+        text, n = OPENING_QUOTE.subn(r"\1„", text)
+        if n:
+            log["opening quote “"] += n
 
-    text = fix_homoglyphs(text, log)
+    if not english:                              # на английски "a", "He", "OK" са истински думи, не двойници
+        text = fix_homoglyphs(text, log)
     text = re.sub(r" {2,}", " ", text)          # повторени интервали
     kept = []
     for line in text.split("\n"):
@@ -118,7 +121,7 @@ def split_documents(text):
 def process (path):
     log = Counter()
     raw = path.read_text(encoding="utf-8-sig")
-    text = normalize_text(raw, log)
+    text = normalize_text(raw, log, english=path.name.startswith("wikipedia_en_"))
     docs = split_documents(text)
     out = []
     for title, body in docs:
@@ -153,6 +156,10 @@ if not files:
     print("There isn't files in data/raw")
     sys.exit(1)
 for f in files:
+    done = CLEAN / f.name
+    if done.exists() and done.stat().st_mtime > f.stat().st_mtime:
+        print(f"up to date: {f.name}")   # чистият файл е по-нов от суровия; при нови правила изтрий data/clean/*.txt
+        continue
     process(f)
 
 # чисти файлове, чийто суров файл вече го няма (преместен или изтрит), се махат, за да не влязат в корпуса

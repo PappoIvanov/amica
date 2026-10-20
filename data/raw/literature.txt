@@ -25,3 +25,10 @@
 25. Йордан Йовков - Женско сърце - https://chitanka.info/book/518 - свободно, починал 1937
 26. Петко Р. Славейков - Басненик - https://chitanka.info/book/550 - свободно, починал 1895
 27. Стоян Михайловски - Басни - https://chitanka.info/book/442 - свободно, починал 1927
+28. Алеко Константинов - Бай Ганьо - https://chitanka.info/book/1763 - свободно, починал 1897
+29. Иван Вазов - Под игото - https://chitanka.info/book/1773 - свободно, починал 1921
+30. Иван Вазов - Пъстър свят - https://chitanka.info/book/507 - свободно, починал 1921
+31. Иван Вазов - Разкази 1881–1901 - https://chitanka.info/book/508 - свободно, починал 1921
+32. Иван Вазов - Разкази 1901–1921 - https://chitanka.info/book/509 - свободно, починал 1921
+33. Уикипедия - Българска Уикипедия - https://huggingface.co/datasets/wikimedia/wikipedia/tree/main/20231101.bg - свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01
+34. Уикипедия - Simple English Wikipedia - https://huggingface.co/datasets/wikimedia/wikipedia/tree/main/20231101.simple - свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01

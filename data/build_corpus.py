@@ -37,7 +37,9 @@ def read_sources():
             continue
         author, title, url = parts[0], parts[1], parts[2]
         status = " - ".join(parts[3:])
-        if status.startswith("свободно"):
+        if "CC BY-SA" in status:
+            license_ = "cc-by-sa"
+        elif status.startswith("свободно"):
             license_ = "public-domain"
         elif status.startswith("защитено"):
             license_ = "protected"
@@ -122,7 +124,7 @@ for path in sorted(CLEAN.glob("*.txt")):
             continue
         seen_texts[key] = doc["id"]
         local.append(doc)
-        if license_ == "public-domain":
+        if license_ in ("public-domain", "cc-by-sa"):
             public.append(doc)
         file_chars += len(body)
         file_licenses[license_] += 1
