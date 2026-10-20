@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+*.jsonl
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/literature.txt
+data/clean/*
+!data/clean/.gitkeep
+checkpoints/*
+!checkpoints/.gitkeep
