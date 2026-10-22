@@ -1,9 +1,10 @@
 """
 Амика v2 · обучение на трансформъра върху токените от BPE.
 
-Данните са шестте .bin файла от tokenizer/encode_corpus.py (uint16, по група и дял). Четат се с
-np.memmap, тоест без да се зареждат целите в паметта. Всяка партида се сглобява от трите групи по
-теглата WEIGHTS, а загубата се мери за всяка група поотделно върху val файловете.
+Данните са шестте .bin файла от tokenizer/encode_corpus.py (uint16, по група и дял), общо 198 MB,
+заредени изцяло в паметта: четенето откъс по откъс от диска на Kaggle беше три пъти по-бавно от GPU-то.
+Всяка партида се сглобява от трите групи по теглата WEIGHTS, а загубата се мери за всяка група
+поотделно върху val файловете.
 Пускане от папката на проекта: py train/train_v2.py
 Настройки от средата, както при v1 (на Kaggle: TOKENS=/kaggle/input/datasets/pavel77ivanov/amica-bg/tokens):
   TOKENS папката с .bin файловете, RUN име на пускането, MAX_STEPS, EVAL_EVERY, EVAL_BATCHES,
@@ -53,8 +54,8 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ---- данни ----
 bpe = BPE.load(ROOT / "tokenizer" / "amica_bpe.json")
-train_data = {g: np.memmap(TOKENS / f"{g}_train.bin", dtype=np.uint16, mode="r") for g in GROUPS}
-val_data = {g: np.memmap(TOKENS / f"{g}_val.bin", dtype=np.uint16, mode="r") for g in GROUPS}
+train_data = {g: np.fromfile(TOKENS / f"{g}_train.bin", dtype=np.uint16) for g in GROUPS}   # целите в RAM
+val_data = {g: np.fromfile(TOKENS / f"{g}_val.bin", dtype=np.uint16) for g in GROUPS}
 probs = np.array([WEIGHTS[g] for g in GROUPS])
 probs = probs / probs.sum()              # теглата стават вероятности, сумата е 1
 for g, p in zip(GROUPS, probs):
