@@ -1,6 +1,6 @@
 """
-Амика v1 · символен трансформър (архитектура от типа Amica).
-Моделът получава редица от знаци и за всяка позиция предсказва следващия знак.
+Амика · трансформър (архитектура от типа GPT): v1 върху знаци, v2 върху токени от BPE.
+Моделът получава редица от токени и за всяка позиция предсказва следващия токен.
 Всичко е написано върху PyTorch от нулата: embedding, внимание, MLP, нормализация.
 """
 import math
@@ -13,12 +13,13 @@ import torch.nn.functional as F
 
 @dataclass
 class Config:
-    vocab_size: int        # брой различни знаци в корпуса
-    block_size: int = 256  # колко знака назад вижда моделът (контекстен прозорец)
+    vocab_size: int        # брой токени: различните знаци при v1, 8192 при v2
+    block_size: int = 256  # колко токена назад вижда моделът (контекстен прозорец)
     n_layer: int = 4       # брой блокове един след друг
     n_head: int = 4        # брой глави на вниманието във всеки блок
     n_embd: int = 128      # ширина на модела: дължина на вектора за всеки знак
     dropout: float = 0.1   # случайно заглушаване на част от сигналите при обучение, срещу наизустяване
+    tie_weights: bool = False   # v2: изходният слой ползва таблицата на вграждането, пести vocab × n_embd параметри
 
 
 class CausalSelfAttention(nn.Module):
@@ -91,6 +92,8 @@ class Amica(nn.Module):
         self.blocks = nn.ModuleList([Block(cfg) for _ in range(cfg.n_layer)])
         self.ln_f = nn.LayerNorm(cfg.n_embd)
         self.head = nn.Linear(cfg.n_embd, cfg.vocab_size, bias=False)   # от вектор към logits за всеки знак
+        if cfg.tie_weights:
+            self.head.weight = self.tok_emb.weight   # една и съща таблица чете токените и ги предсказва
         self.apply(self._init_weights)
 
     def _init_weights(self, module):
