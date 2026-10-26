@@ -2,6 +2,8 @@
 Амика · трансформър (архитектура от типа GPT): v1 върху знаци, v2 върху токени от BPE.
 Моделът получава редица от токени и за всяка позиция предсказва следващия токен.
 Всичко е написано върху PyTorch от нулата: embedding, внимание, MLP, нормализация.
+v3 (2026-10-26): Config.fast_attention пуска същото внимание през готовото ядро на PyTorch
+F.scaled_dot_product_attention; ръчният вариант остава за четене и за v1/v2.
 """
 import math
 from dataclasses import dataclass
@@ -20,6 +22,7 @@ class Config:
     n_embd: int = 128      # ширина на модела: дължина на вектора за всеки знак
     dropout: float = 0.1   # случайно заглушаване на част от сигналите при обучение, срещу наизустяване
     tie_weights: bool = False   # v2: изходният слой ползва таблицата на вграждането, пести vocab × n_embd параметри
+    fast_attention: bool = False   # v3: готовото ядро F.scaled_dot_product_attention вместо ръчната сметка по-долу
 
 
 class CausalSelfAttention(nn.Module):
@@ -29,6 +32,8 @@ class CausalSelfAttention(nn.Module):
         super().__init__()
         assert cfg.n_embd % cfg.n_head == 0
         self.n_head = cfg.n_head
+        self.fast = cfg.fast_attention
+        self.p_drop = cfg.dropout
         self.qkv = nn.Linear(cfg.n_embd, 3 * cfg.n_embd)   # от всеки вектор: заявка, ключ и стойност
         self.proj = nn.Linear(cfg.n_embd, cfg.n_embd)
         self.dropout = nn.Dropout(cfg.dropout)
@@ -43,12 +48,17 @@ class CausalSelfAttention(nn.Module):
         q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)   # (B, глави, T, C/глави)
         k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
-        # колко всяка позиция „гледа“ всяка предишна: скаларно произведение заявка·ключ
-        att = (q @ k.transpose(-2, -1)) / math.sqrt(k.size(-1))
-        att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float("-inf"))
-        att = F.softmax(att, dim=-1)                       # тегла, които по ред се сумират до 1
-        att = self.dropout(att)
-        y = att @ v                                        # претеглена сума на стойностите
+        if self.fast:
+            # v3: същите три стъпки (произведение, маска, softmax, претеглена сума) в едно ядро, което не
+            # държи матрицата T × T за всяка глава в паметта; is_causal=True е същата триъгълна маска
+            y = F.scaled_dot_product_attention(q, k, v, is_causal=True, dropout_p=self.p_drop if self.training else 0.0)
+        else:
+            # колко всяка позиция „гледа“ всяка предишна: скаларно произведение заявка·ключ
+            att = (q @ k.transpose(-2, -1)) / math.sqrt(k.size(-1))
+            att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float("-inf"))
+            att = F.softmax(att, dim=-1)                   # тегла, които по ред се сумират до 1
+            att = self.dropout(att)
+            y = att @ v                                    # претеглена сума на стойностите
         y = y.transpose(1, 2).contiguous().view(B, T, C)   # събираме главите обратно
         return self.dropout(self.proj(y))
 

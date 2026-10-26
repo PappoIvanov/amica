@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Четири варианта за стартовата анимация на Амика (2026-10-25). В приложението е вграден вариант 1 „Хром и лъч“
+     (app/ui/style.css, app/ui/app.js). Другите три са тук като резерв за бъдещо обновяване.
+     Същата страница като артефакт: https://claude.ai/artifact/VomM49k2V46JSafgH9sxJ5 -->
+<title>Амика · стартова анимация</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Една тъмна тема по избор: това е видът на приложението. Подредба: лента с избор, голяма сцена 16:9, под нея фазите във времето и бележки. */
+:root{color-scheme:dark;--bg:#0B0B0C;--panel:#111113;--panel-2:#18181B;--border:#222226;--text:#F2F2F2;--dim:#8A8A90;--orange:#F28C28;--orange-deep:#B85F12;--orange-light:#FFD9AB;--font:"Inter","Segoe UI",system-ui,sans-serif;--mono:"JetBrains Mono",Consolas,monospace;--size:clamp(120px,22vw,210px)}
+@property --a{syntax:'<angle>';inherits:false;initial-value:200deg}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mark{width:40px;height:40px;border-radius:10px;background:#000;color:var(--orange);display:grid;place-items:center;font-weight:800;font-size:15px;letter-spacing:-.5px;flex:none}
+header h1{font-size:18px;font-weight:700;margin:0}
+header p{margin:0;color:var(--dim);font-size:13px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.variants{display:flex;gap:8px;flex-wrap:wrap}
+button,select{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:9px 14px;cursor:pointer}
+button:hover{border-color:var(--dim)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.variants button.active{border-color:var(--orange);color:var(--orange)}
+.replay{background:var(--orange);color:#000;font-weight:600;border-color:var(--orange);margin-left:auto}
+.replay:hover{filter:brightness(1.08)}
+label.speed{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:13px}
+
+.stage{position:relative;aspect-ratio:16/9;min-height:440px;max-height:640px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#15151a 0%,var(--bg) 62%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,3vw,30px)}
+.fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.scene{position:relative;width:var(--size);height:var(--size);perspective:900px;z-index:2}
+.rays,.halo,.floor,.ring,.flare,.glint{position:absolute;pointer-events:none}
+.rays{inset:-170%;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(242,140,40,0) 0deg 7deg,rgba(255,176,90,.16) 7deg 9deg,rgba(242,140,40,0) 9deg 15deg,rgba(255,210,150,.10) 15deg 16.5deg,rgba(242,140,40,0) 16.5deg 23deg);-webkit-mask-image:radial-gradient(circle,#000 14%,transparent 60%);mask-image:radial-gradient(circle,#000 14%,transparent 60%);opacity:0}
+.halo{inset:-70%;border-radius:50%;background:radial-gradient(circle,rgba(242,140,40,.38) 0%,rgba(242,140,40,.12) 34%,rgba(242,140,40,0) 64%);opacity:.85}
+.floor{left:50%;top:116%;width:150%;height:28%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(242,140,40,.42),rgba(242,140,40,0) 70%);filter:blur(7px);opacity:1}
+.ring{inset:-7%;width:114%;height:114%;overflow:visible}
+.ring circle{fill:none;stroke:var(--orange);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:295.3;stroke-dashoffset:295.3;transform:rotate(-90deg);transform-origin:50% 50%;filter:drop-shadow(0 0 2px var(--orange)) drop-shadow(0 0 7px rgba(242,140,40,.8));opacity:0}
+.coin{position:absolute;inset:0;transform-style:preserve-3d}
+.face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.back{transform:rotateY(180deg)}
+.rim{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from var(--a),#6b3208 0%,var(--orange) 16%,var(--orange-light) 26%,var(--orange) 36%,#7a3a0a 54%,#d9791d 68%,var(--orange) 82%,#6b3208 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),inset 0 -3px 8px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.6)}
+.disc{position:absolute;inset:5.5%;border-radius:50%;background:radial-gradient(circle at 38% 26%,#2c2c32 0%,#131316 38%,#000 72%);display:grid;place-items:center;box-shadow:inset 0 2px 10px rgba(255,255,255,.07),inset 0 -10px 22px rgba(0,0,0,.85)}
+.am{font-weight:800;font-size:calc(var(--size)*.40);letter-spacing:calc(var(--size)*-.015);line-height:1;background:linear-gradient(165deg,var(--orange-light) 0%,var(--orange) 42%,#c56912 76%,#ffb866 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 calc(var(--size)*.03) rgba(242,140,40,.5));transform:translateY(calc(var(--size)*-.01))}
+.back .disc::after{content:"";width:28%;height:28%;border-radius:50%;border:2px solid var(--orange);opacity:.8}
+.gloss{position:absolute;left:14%;right:14%;top:7%;height:40%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 92%);pointer-events:none}
+.sweep{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none}
+.sweep::after{content:"";position:absolute;top:-60%;bottom:-60%;left:-70%;width:34%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.72) 50%,rgba(255,255,255,0));transform:skewX(-22deg);opacity:0}
+.flare{left:50%;top:50%;width:300%;height:2px;transform:translate(-50%,-50%) scaleX(0);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,240,220,.95) 50%,rgba(255,255,255,0));box-shadow:0 0 14px 3px rgba(255,200,140,.55);opacity:0;z-index:3}
+.glint{left:79%;top:13%;width:6px;height:6px;opacity:0;z-index:3}
+.glint::before,.glint::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:2px;margin:-1px 0 0 -22px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0));box-shadow:0 0 8px 1px rgba(255,255,255,.7)}
+.glint::after{transform:rotate(90deg)}
+.hello{font-weight:700;font-size:clamp(20px,3vw,30px);margin:0;z-index:2;letter-spacing:.02em;text-align:center;padding:0 16px}
+.cards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;z-index:2;padding:0 16px}
+.cards div{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:13px;min-width:150px}
+.cards b{display:block;font-weight:600;font-size:14px}
+.cards span{color:var(--dim)}
+
+.stage.v3 .ring circle{stroke-dashoffset:0;opacity:1}
+.stage.v3 .rays{opacity:.5}
+
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes haloIn{from{opacity:0}to{opacity:.85}}
+@keyframes growIn{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes sweep{0%{left:-70%;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:136%;opacity:0}}
+@keyframes flare{0%{opacity:0;transform:translate(-50%,-50%) scaleX(0)}35%{opacity:1;transform:translate(-50%,-50%) scaleX(1)}100%{opacity:0;transform:translate(-50%,-50%) scaleX(1.25)}}
+@keyframes glint{0%{opacity:0;transform:scale(.2) rotate(0deg)}45%{opacity:1;transform:scale(1) rotate(40deg)}100%{opacity:0;transform:scale(.3) rotate(90deg)}}
+@keyframes helloIn{from{opacity:0;letter-spacing:.28em;transform:translateY(10px)}to{opacity:1;letter-spacing:.02em;transform:none}}
+@keyframes fadeup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes haloPulse{0%{opacity:0;transform:scale(.6)}45%{opacity:1;transform:scale(1.06)}100%{opacity:.85;transform:scale(1)}}
+@keyframes ringFlash{0%{stroke-dashoffset:0;opacity:0;stroke-width:1.5}30%{opacity:1;stroke-width:4}100%{stroke-dashoffset:0;opacity:0;stroke-width:1.5}}
+@keyframes draw{from{stroke-dashoffset:295.3;opacity:1}to{stroke-dashoffset:0;opacity:1}}
+@keyframes raysIn{0%{opacity:0}45%{opacity:1}100%{opacity:.5}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes flipIn{from{transform:rotateX(82deg) scale(.7);opacity:0}to{transform:none;opacity:1}}
+@keyframes spinIn{0%{transform:rotateY(1080deg) scale(.55);opacity:0}12%{opacity:1}100%{transform:rotateY(0deg) scale(1);opacity:1}}
+@keyframes rimLight{from{--a:200deg}to{--a:1280deg}}
+
+.v1.play .halo{animation:haloIn .8s both}
+.v1.play .coin{animation:growIn 1s cubic-bezier(.2,.8,.2,1) .15s both}
+.v1.play .sweep::after{animation:sweep 1.1s ease-in-out .95s both}
+.v1.play .flare{animation:flare .7s ease-out 1.3s both}
+.v1.play .glint{animation:glint .6s 1.4s both}
+.v1.play .floor{animation:fadein 1s 1s both}
+.v1.play .hello{animation:helloIn .9s cubic-bezier(.2,.8,.2,1) 1.9s both}
+.v1.play .cards{animation:fadeup .6s 2.4s both}
+
+.v2.play .coin{animation:growIn .7s cubic-bezier(.34,1.4,.64,1) 1.55s both}
+.v2.play .halo{animation:haloPulse 1s 1.5s both}
+.v2.play .ring circle{animation:ringFlash .7s 1.45s both}
+.v2.play .sweep::after{animation:sweep .9s ease-in-out 2.15s both}
+.v2.play .floor{animation:fadein .8s 1.9s both}
+.v2.play .hello{animation:helloIn .9s cubic-bezier(.2,.8,.2,1) 2.5s both}
+.v2.play .cards{animation:fadeup .6s 3s both}
+
+.v3.play .ring circle{animation:draw 1.3s cubic-bezier(.4,0,.2,1) both}
+.v3.play .rays{animation:raysIn 2s 1s both,spin 26s linear 1s infinite}
+.v3.play .coin{animation:flipIn 1s cubic-bezier(.2,.8,.2,1) 1.1s both}
+.v3.play .halo{animation:haloIn 1s 1.3s both}
+.v3.play .glint{animation:glint .6s 2.15s both}
+.v3.play .floor{animation:fadein 1s 1.6s both}
+.v3.play .hello{animation:helloIn .9s cubic-bezier(.2,.8,.2,1) 2.3s both}
+.v3.play .cards{animation:fadeup .6s 2.85s both}
+
+.v4.play .coin{animation:spinIn 2.1s cubic-bezier(.15,.75,.2,1) both}
+.v4.play .front .rim{animation:rimLight 2.1s cubic-bezier(.15,.75,.2,1) both}
+.v4.play .halo{animation:haloIn 1.2s .6s both}
+.v4.play .sweep::after{animation:sweep .8s ease-in-out 2.05s both}
+.v4.play .glint{animation:glint .6s 2.4s both}
+.v4.play .floor{animation:fadein 1s 1.2s both}
+.v4.play .hello{animation:helloIn .9s cubic-bezier(.2,.8,.2,1) 2.35s both}
+.v4.play .cards{animation:fadeup .6s 2.9s both}
+
+@media (prefers-reduced-motion:reduce){.play *,.play *::after{animation-duration:1ms!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+
+.below{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px}
+@media (max-width:760px){.below{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;min-width:0}
+.panel h2{margin:0 0 12px;font-size:12px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.tl{display:grid;grid-template-columns:minmax(90px,130px) minmax(0,1fr);gap:8px 10px;align-items:center;font-size:13px}
+.tl .lab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .track{position:relative;height:14px;background:var(--panel-2);border-radius:7px}
+.tl .barx{position:absolute;top:0;bottom:0;border-radius:7px;background:var(--orange);opacity:.85}
+.tl .axis{grid-column:2;position:relative;height:18px;color:var(--dim);font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums}
+.tl .axis span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.notes p{margin:0 0 10px}
+.notes .how{color:var(--dim);font-size:13px}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">AM</div>
+    <div>
+      <h1>Амика · стартова анимация</h1>
+      <p>Четири варианта с кръгло лъскаво лого. Избери вариант, пусни го пак, забави го, за да видиш фазите.</p>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="variants" id="variants">
+      <button type="button" data-v="v1" class="active">1 · Хром и лъч</button>
+      <button type="button" data-v="v2">2 · Частици</button>
+      <button type="button" data-v="v3">3 · Неон и лъчи</button>
+      <button type="button" data-v="v4">4 · Монета</button>
+    </div>
+    <label class="speed">Скорост
+      <select id="speed">
+        <option value="1">нормална</option>
+        <option value="2">2 пъти по-бавно</option>
+        <option value="4">4 пъти по-бавно</option>
+      </select>
+    </label>
+    <button type="button" class="replay" id="replay">Пусни пак</button>
+  </div>
+
+  <section class="stage v1" id="stage" aria-label="Сцена с анимацията">
+    <canvas class="fx" id="fx" aria-hidden="true"></canvas>
+    <div class="scene">
+      <div class="rays"></div>
+      <div class="halo"></div>
+      <div class="floor"></div>
+      <div class="coin">
+        <div class="face front">
+          <div class="rim"></div>
+          <div class="disc"><span class="am">AM</span></div>
+          <div class="gloss"></div>
+          <div class="sweep"></div>
+        </div>
+        <div class="face back">
+          <div class="rim"></div>
+          <div class="disc"></div>
+        </div>
+      </div>
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="47"/></svg>
+      <div class="flare"></div>
+      <div class="glint"></div>
+    </div>
+    <h2 class="hello" id="hello">Добър вечер, Павел.</h2>
+    <div class="cards">
+      <div><b>Коя си ти?</b><span>Who are you</span></div>
+      <div><b>Колко е часът?</b><span>Uses the clock tool</span></div>
+      <div><b>Разкажи ми приказка.</b><span>Tell me a tale</span></div>
+    </div>
+  </section>
+
+  <div class="below">
+    <div class="panel"><h2>Фази във времето</h2><div class="tl" id="tl"></div></div>
+    <div class="panel notes"><h2 id="nt-title">Как е направено</h2><p id="nt-what"></p><p class="how" id="nt-how"></p></div>
+  </div>
+</div>
+
+<script>
+const V = {
+  v1: {name: 'Хром и лъч', total: 3.0,
+    what: 'Логото изплува от тъмното с топъл ореол, по стъклото му минава отблясък като по лъскав метал, през средата проблясва тънък лъч и искра на ръба, после поздравът се събира от разредени букви.',
+    how: 'Само CSS: конусен градиент за металния пръстен, радиален за стъклото, маскирана ивица за отблясъка. Около 70 реда в style.css, без JS освен класа play.',
+    phases: [['ореол', 0, .8], ['логото расте', .15, 1.15], ['отблясък', .95, 2.05], ['лъч и искра', 1.3, 2.0], ['поздрав', 1.9, 2.8], ['карти', 2.4, 3.0]]},
+  v2: {name: 'Частици', total: 3.6,
+    what: 'Стотици искри долитат от краищата и се подреждат в кръг, кръгът пламва и от него се ражда логото, искрите се разпръскват, минава отблясък и идва поздравът.',
+    how: 'Canvas с около 260 частици на requestAnimationFrame плюс CSS за логото. Най-ефектният и най-тежкият: около 60 реда JS и 40 реда CSS.',
+    phases: [['частиците долитат', 0, 1.6], ['пламък на пръстена', 1.45, 2.15], ['логото се ражда', 1.55, 2.25], ['отблясък', 2.15, 3.05], ['поздрав', 2.5, 3.4], ['карти', 3.0, 3.6]]},
+  v3: {name: 'Неон и лъчи', total: 3.5,
+    what: 'Неонов пръстен се изчертава сам около празното място, зад него се разгарят лъчи светлина, логото се изправя от легнало положение към теб и остава на фона на тихо въртящи се лъчи.',
+    how: 'SVG окръжност със stroke-dashoffset за изчертаването, повтарящ се конусен градиент с радиална маска за лъчите, CSS 3D за изправянето. Около 80 реда CSS.',
+    phases: [['пръстенът се чертае', 0, 1.3], ['лъчи', 1.0, 3.0], ['логото се изправя', 1.1, 2.1], ['искра', 2.15, 2.75], ['поздрав', 2.3, 3.2], ['карти', 2.85, 3.45]]},
+  v4: {name: 'Монета', total: 3.5,
+    what: 'Логото долита като монета, върти се три пъти около оста си, светлината пробягва по металния ръб, забавя и ляга с лице към теб. Отблясък, искра и поздрав.',
+    how: 'CSS 3D: две лица с backface-visibility, въртене rotateY с плавно спиране, анимиран ъгъл на конусния градиент за светлината по ръба. Около 60 реда CSS.',
+    phases: [['въртене', 0, 2.1], ['светлина по ръба', 0, 2.1], ['отблясък', 2.05, 2.85], ['искра', 2.4, 3.0], ['поздрав', 2.35, 3.25], ['карти', 2.9, 3.5]]}
+};
+const stage = document.getElementById('stage');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let current = 'v1', k = 1, fxStop = null;
+
+function greeting() {
+  const d = new Date(), t = d.getHours() * 60 + d.getMinutes();
+  const w = (t >= 180 && t < 540) ? 'Добро утро' : (t >= 540 && t <= 1140) ? 'Добър ден' : 'Добър вечер';
+  return w + ', Павел.';
+}
+document.getElementById('hello').textContent = greeting();
+
+function renderInfo(v) {
+  const d = V[v], max = Math.ceil(d.total * 2) / 2;
+  const rows = d.phases.map(([l, a, b]) =>
+    `<div class="lab">${l}</div><div class="track"><div class="barx" style="left:${(a / max * 100).toFixed(1)}%;width:${((b - a) / max * 100).toFixed(1)}%"></div></div>`).join('');
+  const ticks = [];
+  for (let s = 0; s <= max; s += 1) ticks.push(`<span style="left:${(s / max * 100).toFixed(1)}%">${s} s</span>`);
+  if (max % 1 !== 0) ticks.push(`<span style="left:100%">${max} s</span>`);
+  document.getElementById('tl').innerHTML = rows + `<div class="axis">${ticks.join('')}</div>`;
+  document.getElementById('nt-title').textContent = d.name + ' · ' + d.total.toFixed(1) + ' s';
+  document.getElementById('nt-what').textContent = d.what;
+  document.getElementById('nt-how').textContent = d.how;
+}
+
+function particles(k) {
+  const c = document.getElementById('fx'), ctx = c.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = c.clientWidth, H = c.clientHeight;
+  c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const sr = stage.getBoundingClientRect(), cr = stage.querySelector('.scene').getBoundingClientRect();
+  const cx = cr.left - sr.left + cr.width / 2, cy = cr.top - sr.top + cr.height / 2, R = cr.width / 2;
+  const N = 260, P = [];
+  for (let i = 0; i < N; i++) {
+    const th = (i / N) * Math.PI * 2 + (Math.random() - .5) * .05;
+    const a0 = Math.random() * Math.PI * 2, d0 = Math.max(W, H) * (0.55 + Math.random() * 0.5);
+    P.push({x0: cx + Math.cos(a0) * d0, y0: cy + Math.sin(a0) * d0, tx: cx + Math.cos(th) * R, ty: cy + Math.sin(th) * R,
+      th, t0: Math.random() * 0.45, dur: 1.0 + Math.random() * 0.5, s: 0.8 + Math.random() * 1.8, w: Math.random() < 0.3, sp: 0.6 + Math.random() * 1.2});
+  }
+  const T_ARRIVE = 1.6, T_END = 2.6;
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  function pos(p, t) {
+    if (t < T_ARRIVE) {
+      const u = Math.min(1, Math.max(0, (t - p.t0) / p.dur)), e = ease(u);
+      const ox = Math.cos(p.th + Math.PI / 2) * Math.sin(u * Math.PI) * R * 0.35 * p.sp;
+      return [p.x0 + (p.tx - p.x0) * e + ox * (1 - e), p.y0 + (p.ty - p.y0) * e];
+    }
+    const b = t - T_ARRIVE, v0 = 60 + 120 * p.sp, dist = v0 / 2.2 * (1 - Math.exp(-b * 2.2));
+    return [p.tx + Math.cos(p.th) * dist, p.ty + Math.sin(p.th) * dist];
+  }
+  let start = null, raf = 0, alive = true;
+  function frame(now) {
+    if (!alive) return;
+    if (!start) start = now;
+    const t = (now - start) / 1000 / k;
+    ctx.clearRect(0, 0, W, H);
+    const fade = t < T_ARRIVE ? 1 : Math.max(0, 1 - (t - T_ARRIVE) / (T_END - T_ARRIVE));
+    ctx.lineCap = 'round';
+    for (const p of P) {
+      if (t < p.t0) continue;
+      const [x, y] = pos(p, t), [px, py] = pos(p, Math.max(p.t0, t - 0.05));
+      const col = p.w ? '255,236,210' : '242,140,40';
+      ctx.strokeStyle = `rgba(${col},${(0.55 * fade).toFixed(3)})`; ctx.lineWidth = p.s;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke();
+      ctx.fillStyle = `rgba(${col},${(0.95 * fade).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(x, y, p.s * 0.7, 0, Math.PI * 2); ctx.fill();
+    }
+    if (t < T_END) raf = requestAnimationFrame(frame); else { ctx.clearRect(0, 0, W, H); alive = false; }
+  }
+  raf = requestAnimationFrame(frame);
+  return () => { alive = false; cancelAnimationFrame(raf); ctx.clearRect(0, 0, W, H); };
+}
+
+function play() {
+  if (fxStop) { fxStop(); fxStop = null; }
+  stage.classList.remove('play');
+  void stage.offsetWidth;
+  stage.classList.add('play');
+  stage.getBoundingClientRect();
+  const rate = 1 / k;
+  stage.getAnimations({subtree: true}).forEach(a => { a.playbackRate = rate; });
+  if (current === 'v2' && !reduce) fxStop = particles(k);
+}
+
+function setVariant(v) {
+  stage.classList.remove(current); current = v; stage.classList.add(v);
+  document.querySelectorAll('#variants button').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  renderInfo(v);
+  try { history.replaceState(null, '', '#' + v); } catch (e) {}
+  play();
+}
+
+document.getElementById('variants').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setVariant(b.dataset.v); });
+document.getElementById('replay').addEventListener('click', play);
+document.getElementById('speed').addEventListener('change', e => { k = Number(e.target.value); play(); });
+const fromHash = (location.hash || '').replace('#', '');
+setVariant(V[fromHash] ? fromHash : 'v1');
+</script>
+</body>
+</html>

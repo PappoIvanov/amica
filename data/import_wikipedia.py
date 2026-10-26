@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 # два езика с еднакъв конвейер: папка с parquet, подпапка в набора на Уикимедия, име за literature.txt,
 # представка на изходните файлове, таван, азбука на езика, раздели в края на статията и заглавия за прескачане
-WIKI = os.environ.get("WIKI", "bg")
+WIKI = os.environ.get("WIKI", "bg")                    # bg, en (Simple English) или en_full (пълната английска)
 SETTINGS = {
     "bg": dict(inbox="_wikipedia", subset="20231101.bg", title="Българска Уикипедия", prefix="wikipedia_",
                max_chars=200e6, script=r"[\u0400-\u04FF]",
@@ -35,6 +35,13 @@ SETTINGS = {
                tail={"references", "notes", "footnotes", "sources", "other websites", "related pages", "see also",
                      "external links", "further reading", "bibliography", "gallery"},
                skip_title=r"^(List of |Lists of |Category:|Template:|Portal:)|\(disambiguation\)$"),
+    # пълната английска Уикипедия (2026-10-26): 3 от 41 parquet файла в отделна папка, извадка до тавана;
+    # същите правила като Simple English, друга представка и свой ред в literature.txt
+    "en_full": dict(inbox="_wikipedia_en_full", subset="20231101.en", title="English Wikipedia", prefix="wikipedia_enfull_",
+               max_chars=150e6, script=r"[A-Za-z]",
+               tail={"references", "notes", "footnotes", "sources", "see also", "external links", "further reading",
+                     "bibliography", "gallery", "citations", "explanatory notes"},
+               skip_title=r"^(List of |Lists of |Category:|Template:|Portal:|Wikipedia:)|\(disambiguation\)$"),
 }[WIKI]
 INBOX = RAW / SETTINGS["inbox"]
 LITERATURE = RAW / "literature.txt"

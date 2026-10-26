@@ -65,7 +65,9 @@ MAX_ROUNDS = 4   # най-много толкова реплики на Амик
 
 
 class Engine:
-    def __init__(self, checkpoint, temperature=0.4, top_k=20, repetition_penalty=1.3, max_tokens=120):
+    def __init__(self, checkpoint, temperature=0.2, top_k=10, repetition_penalty=1.3, max_tokens=120):
+        # temperature 0.2 вместо 0.4 от 2026-10-26: при 0.4 Амика преписва часа от резултата в 1 от 4 случая,
+        # при 0.2 в 4 от 5; разнообразието в отговорите не е нужно при толкова малък модел
         ckpt = torch.load(checkpoint, map_location="cpu")
         self.model = Amica(Config(**ckpt["config"]))
         self.model.load_state_dict(ckpt["state_dict"])

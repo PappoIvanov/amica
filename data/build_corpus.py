@@ -98,6 +98,10 @@ for path in sorted(CLEAN.glob("*.txt")):
     docs = clean_documents(path)
     raw_path = RAW / path.name
     markers = raw_markers(raw_path) if raw_path.exists() else []
+    if not markers:
+        # файл без нито един ред "# Заглавие (N.)" не е текст за корпуса (например разговорите за етап 5)
+        print(f"skip {path.name}: no '# Title (N.)' markers, not a corpus source")
+        continue
     if len(markers) != len(docs):
         # маркерите не са по един на документ: ползваме най-честия за целия файл
         dominant = Counter(markers).most_common(1)[0][0] if markers else None

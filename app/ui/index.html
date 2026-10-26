@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<title>Amica</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo"><div class="rim"></div><div class="disc"><span class="am">AM</span></div><div class="gloss"></div></div>
+    <div>
+      <div class="brand-name">Amica</div>
+      <div class="brand-sub">personal language model</div>
+    </div>
+  </div>
+  <button class="new-chat" id="new-chat">+ New chat</button>
+  <div class="section-label">Recent</div>
+  <ul class="chat-list" id="chat-list"></ul>
+  <nav class="bottom-nav">
+    <button class="nav-item" id="nav-memory">Memory</button>
+    <button class="nav-item" id="nav-settings">Settings</button>
+  </nav>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="chat-title" id="chat-title">New chat</div>
+    <div class="topbar-right">
+      <span class="tools" id="tools-line"></span>
+      <div class="chip" id="model-chip">loading…</div>
+    </div>
+  </header>
+
+  <section class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="scene">
+        <div class="halo"></div>
+        <div class="floor"></div>
+        <div class="logo">
+          <div class="rim"></div>
+          <div class="disc"><span class="am">AM</span></div>
+          <div class="gloss"></div>
+          <div class="sweep"></div>
+        </div>
+        <div class="flare"></div>
+        <div class="glint"></div>
+      </div>
+      <h1 id="greeting">&nbsp;</h1>
+      <p>Amica speaks Bulgarian. She has clock, date and calc at hand, and asks before anything that changes your files.</p>
+      <div class="suggestions">
+        <button class="suggestion" data-text="Коя си ти?"><b>Коя си ти?</b><span>Who are you</span></button>
+        <button class="suggestion" data-text="Колко е часът?"><b>Колко е часът?</b><span>Uses the clock tool</span></button>
+        <button class="suggestion" data-text="Разкажи ми приказка."><b>Разкажи ми приказка.</b><span>Tell me a tale</span></button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="composer">
+    <div class="input-row">
+      <textarea id="input" rows="1" placeholder="Message Amica..."></textarea>
+      <button class="send" id="send" aria-label="Send">&#8593;</button>
+    </div>
+    <div class="hints">
+      <span>Enter to send · Shift+Enter for a new line</span>
+      <span id="memory-hint"></span>
+    </div>
+  </footer>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

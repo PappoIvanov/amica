@@ -32,3 +32,176 @@
 32. Иван Вазов - Разкази 1901–1921 - https://chitanka.info/book/509 - свободно, починал 1921
 33. Уикипедия - Българска Уикипедия - https://huggingface.co/datasets/wikimedia/wikipedia/tree/main/20231101.bg - свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01
 34. Уикипедия - Simple English Wikipedia - https://huggingface.co/datasets/wikimedia/wikipedia/tree/main/20231101.simple - свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01
+35. Антон Страшимиров - Хоро - https://chitanka.info/book/1890 - свободно, починал 1937
+36. Добри Немиров - Шляпа-шлюпа - https://chitanka.info/text/14376 - свободно, починал 1945
+37. Добри Немиров - Урок по български език - https://chitanka.info/text/18298 - свободно, починал 1945
+38. Добри Немиров - Бучка захар - https://chitanka.info/text/18319 - свободно, починал 1945
+39. Добри Немиров - Аз и Славчо Горнокрайчето - https://chitanka.info/text/26085 - свободно, починал 1945
+40. Добри Немиров - На път - https://chitanka.info/text/26086 - свободно, починал 1945
+41. Добри Немиров - Свобода и хляб - https://chitanka.info/text/26087 - свободно, починал 1945
+42. Добри Немиров - Скъпото наследство - https://chitanka.info/text/26088 - свободно, починал 1945
+43. Добри Немиров - Радости и скърби - https://chitanka.info/text/26089 - свободно, починал 1945
+44. Добри Немиров - Соколчето - https://chitanka.info/text/26090 - свободно, починал 1945
+45. Добри Немиров - Моят приятел Бечо - https://chitanka.info/text/26091 - свободно, починал 1945
+46. Добри Немиров - Щастливият внук - https://chitanka.info/text/26092 - свободно, починал 1945
+47. Добри Немиров - Хей - https://chitanka.info/text/26093 - свободно, починал 1945
+48. Добри Немиров - Приятел - https://chitanka.info/text/26094 - свободно, починал 1945
+49. Добри Немиров - Гостоприемство - https://chitanka.info/text/26095 - свободно, починал 1945
+50. Добри Немиров - Бай Йордан гледа - https://chitanka.info/text/26096 - свободно, починал 1945
+51. Добри Немиров - Майстор Тасо - https://chitanka.info/text/26097 - свободно, починал 1945
+52. Добри Немиров - Скъпоценният камък - https://chitanka.info/text/26098 - свободно, починал 1945
+53. Добри Немиров - Обида - https://chitanka.info/text/26099 - свободно, починал 1945
+54. Добри Немиров - Не е сън - https://chitanka.info/text/26100 - свободно, починал 1945
+55. Добри Немиров - Сбогом, училище! - https://chitanka.info/text/26101 - свободно, починал 1945
+56. Добри Немиров - Ключът за живота - https://chitanka.info/text/26102 - свободно, починал 1945
+57. Добри Немиров - Песничката - https://chitanka.info/text/26103 - свободно, починал 1945
+58. Добри Немиров - Диня, хляб и сирене - https://chitanka.info/text/26104 - свободно, починал 1945
+59. Добри Немиров - Чичо Захари - https://chitanka.info/text/26105 - свободно, починал 1945
+60. Добри Немиров - Най-бедният - https://chitanka.info/text/26106 - свободно, починал 1945
+61. Добри Немиров - Григорий Калистратов - https://chitanka.info/text/26107 - свободно, починал 1945
+62. Добри Немиров - Где си, Поликраище - https://chitanka.info/text/26108 - свободно, починал 1945
+63. Добри Немиров - Златният пръстен - https://chitanka.info/text/26109 - свободно, починал 1945
+64. Добри Немиров - Отмъщение - https://chitanka.info/text/26110 - свободно, починал 1945
+65. Добри Немиров - Свада - https://chitanka.info/text/26111 - свободно, починал 1945
+66. Добри Немиров - Моят дядо - https://chitanka.info/text/26112 - свободно, починал 1945
+67. Добри Немиров - Вуйчо Борис - https://chitanka.info/text/26113 - свободно, починал 1945
+68. Добри Немиров - Сам-самичък - https://chitanka.info/text/26114 - свободно, починал 1945
+69. Добри Немиров - Първият ми училищен приятел - https://chitanka.info/text/26115 - свободно, починал 1945
+70. Добри Немиров - Бъдни вечер - https://chitanka.info/text/26116 - свободно, починал 1945
+71. Добри Немиров - На харман - https://chitanka.info/text/26117 - свободно, починал 1945
+72. Добри Немиров - Приятели - https://chitanka.info/text/26118 - свободно, починал 1945
+73. Добри Немиров - Добре дошла, пролет - https://chitanka.info/text/26119 - свободно, починал 1945
+74. Добри Немиров - При господин Тифенбах - https://chitanka.info/text/26120 - свободно, починал 1945
+75. Добри Немиров - На война - https://chitanka.info/text/26121 - свободно, починал 1945
+76. Добри Немиров - При Илийчо за маслинки - https://chitanka.info/text/26122 - свободно, починал 1945
+77. Добри Немиров - Приключение - https://chitanka.info/text/26123 - свободно, починал 1945
+78. Добри Немиров - Цигулар - https://chitanka.info/text/26124 - свободно, починал 1945
+79. Добри Немиров - Един постигнат идеал - https://chitanka.info/text/26125 - свободно, починал 1945
+80. Добри Немиров - Очи, които гледат - https://chitanka.info/text/27149 - свободно, починал 1945
+81. Добри Немиров - Дунавът - https://chitanka.info/text/27150 - свободно, починал 1945
+82. Христо Смирненски - Страхливите мускетари или Бай Янковият щаб и обединението - https://chitanka.info/text/47863 - свободно, починал 1923
+83. Христо Смирненски - Камък падна от небето - https://chitanka.info/text/47864 - свободно, починал 1923
+84. Христо Смирненски - Държавният съд - https://chitanka.info/text/47865 - свободно, починал 1923
+85. Иван Вазов - Хъшове - https://chitanka.info/text/3758 - свободно, починал 1921
+86. Иван Вазов - Службогонци - https://chitanka.info/text/3760 - свободно, починал 1921
+87. Иван Вазов - Борислав - https://chitanka.info/text/3761 - свободно, починал 1921
+88. Иван Вазов - Към пропаст - https://chitanka.info/text/3766 - свободно, починал 1921
+89. Иван Вазов - Митрофан и Дормидолски - https://chitanka.info/text/3763 - свободно, починал 1921
+90. Иван Вазов - Нора - https://chitanka.info/text/3764 - свободно, починал 1921
+91. Иван Вазов - Немили-недраги - https://chitanka.info/text/3765 - свободно, починал 1921
+92. Иван Вазов - Една одисея из Делиорман - https://chitanka.info/text/4197 - свободно, починал 1921
+93. Йордан Йовков - Албена - https://chitanka.info/text/7866 - свободно, починал 1937
+94. Йордан Йовков - Боряна - https://chitanka.info/text/7867 - свободно, починал 1937
+95. Йордан Йовков - Обикновен човек - https://chitanka.info/text/7868 - свободно, починал 1937
+96. Йордан Йовков - Милионерът - https://chitanka.info/text/7869 - свободно, починал 1937
+97. Любен Каравелов - Маминото детенце - https://chitanka.info/text/3784 - свободно, починал 1879
+98. Любен Каравелов - Българи от старо време - https://chitanka.info/text/4128 - свободно, починал 1879
+99. Любен Каравелов - Хаджи Ничо - https://chitanka.info/text/4129 - свободно, починал 1879
+100. Любен Каравелов - Богатият сиромах - https://chitanka.info/text/4130 - свободно, починал 1879
+101. Любен Каравелов - Войвода - https://chitanka.info/text/4144 - свободно, починал 1879
+102. Любен Каравелов - Стоян - https://chitanka.info/text/4145 - свободно, починал 1879
+103. Любен Каравелов - Отечество - https://chitanka.info/text/28502 - свободно, починал 1879
+104. Тодор Г. Влайков - Пролетта - https://chitanka.info/text/18307 - свободно, починал 1943
+105. Тодор Г. Влайков - Малинарка - https://chitanka.info/text/28504 - свободно, починал 1943
+106. Добри Немиров - Ангелогласният - https://chitanka.info/book/11048 - свободно, починал 1945
+107. Добри Немиров - Когато бях малък - https://chitanka.info/book/4641 - свободно, починал 1945
+108. Добри Войников - Криворазбраната цивилизация - https://chitanka.info/text/3750 - свободно, починал 1878
+109. Христо Смирненски - Избрани творби в два тома - https://chitanka.info/book/10384 - свободно, починал 1923
+110. Иван Вазов - Драски и шарки - https://chitanka.info/book/493 - свободно, починал 1921
+111. Иван Вазов - Казаларската царица - https://chitanka.info/book/12045 - свободно, починал 1921
+112. Иван Вазов - Светослав Тертер - https://chitanka.info/book/1774 - свободно, починал 1921
+113. Иван Вазов - Чичовци - https://chitanka.info/text/3757 - свободно, починал 1921
+114. Иван Вазов - Нова земя - https://chitanka.info/text/3754 - свободно, починал 1921
+115. Иван Вазов - Утро в Банки - https://chitanka.info/book/515 - свободно, починал 1921
+116. Иван Вазов - В чужбина - https://chitanka.info/book/490 - свободно, починал 1921
+117. Иван Вазов - В недрата на Родопите - https://chitanka.info/book/1775 - свободно, починал 1921
+118. Иван Вазов - Видено и чуто - https://chitanka.info/book/491 - свободно, починал 1921
+119. Йордан Йовков - Чифликът край границата - https://chitanka.info/book/2033 - свободно, починал 1937
+120. Йордан Йовков - Приключенията на Гороломов - https://chitanka.info/book/2034 - свободно, починал 1937
+121. Йордан Йовков - Те победиха - https://chitanka.info/book/523 - свободно, починал 1937
+122. Йордан Йовков - Жетварят - https://chitanka.info/text/7865 - свободно, починал 1937
+123. Петко Тодоров - Драми - https://chitanka.info/book/390 - свободно, починал 1916
+124. Петко Тодоров - Идилии - https://chitanka.info/book/216 - свободно, починал 1916
+125. Захари Стоянов - Христо Ботйов - https://chitanka.info/book/1770 - свободно, починал 1889
+126. Захари Стоянов - Превратът - https://chitanka.info/book/9304 - свободно, починал 1889
+127. Захари Стоянов - Записки по българските въстания - https://chitanka.info/book/1771 - свободно, починал 1889
+128. Народно събрание - Закони и кодекси, приети от 41-во до 52-ро Народно събрание (2009–2026), както са обнародвани - https://www.parliament.bg/bg/laws - свободно, нормативни актове (ЗАПСП, чл. 4, т. 1)
+129. Народно събрание - Конституция на Република България - https://www.parliament.bg/bg/const - свободно, нормативен акт (ЗАПСП, чл. 4, т. 1)
+130. Уикиизточник - Закони в консолидиран вид от bg.wikisource.org (Търговски закон) - https://bg.wikisource.org/wiki/Категория:Закони - свободно, нормативни актове (ЗАПСП, чл. 4, т. 1); страниците са CC BY-SA
+131. Уикипедия - English Wikipedia - https://huggingface.co/datasets/wikimedia/wikipedia/tree/main/20231101.en - свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01
+132. Oscar Wilde - The Importance of Being Earnest - https://www.gutenberg.org/ebooks/844 - свободно, починал 1900
+133. Oscar Wilde - Lady Windermere's Fan - https://www.gutenberg.org/ebooks/790 - свободно, починал 1900
+134. Oscar Wilde - An Ideal Husband - https://www.gutenberg.org/ebooks/885 - свободно, починал 1900
+135. Bernard Shaw - Pygmalion - https://www.gutenberg.org/ebooks/3825 - свободно, починал 1950
+136. Bernard Shaw - Arms and the Man - https://www.gutenberg.org/ebooks/3618 - свободно, починал 1950
+137. Henrik Ibsen - A Doll's House - https://www.gutenberg.org/ebooks/2542 - свободно, починал 1928
+138. Henrik Ibsen - Hedda Gabler (превод Edmund Gosse и William Archer) - https://www.gutenberg.org/ebooks/4093 - свободно, починал 1928
+139. Anton Chekhov - Plays, Second Series (превод Julius West, починал 1918) - https://www.gutenberg.org/ebooks/7986 - свободно, починал 1918
+140. Jane Austen - Pride and Prejudice - https://www.gutenberg.org/ebooks/1342 - свободно, починал 1817
+141. Jane Austen - Emma - https://www.gutenberg.org/ebooks/158 - свободно, починал 1817
+142. Jane Austen - Sense and Sensibility - https://www.gutenberg.org/ebooks/161 - свободно, починал 1817
+143. Jane Austen - Persuasion - https://www.gutenberg.org/ebooks/105 - свободно, починал 1817
+144. Arthur Conan Doyle - The Adventures of Sherlock Holmes - https://www.gutenberg.org/ebooks/1661 - свободно, починал 1930
+145. Arthur Conan Doyle - The Return of Sherlock Holmes - https://www.gutenberg.org/ebooks/108 - свободно, починал 1930
+146. Arthur Conan Doyle - The Memoirs of Sherlock Holmes - https://www.gutenberg.org/ebooks/834 - свободно, починал 1930
+147. Arthur Conan Doyle - The Hound of the Baskervilles - https://www.gutenberg.org/ebooks/2852 - свободно, починал 1930
+148. Arthur Conan Doyle - A Study in Scarlet - https://www.gutenberg.org/ebooks/244 - свободно, починал 1930
+149. Arthur Conan Doyle - The Sign of the Four - https://www.gutenberg.org/ebooks/2097 - свободно, починал 1930
+150. Mark Twain - The Adventures of Tom Sawyer - https://www.gutenberg.org/ebooks/74 - свободно, починал 1910
+151. Mark Twain - Adventures of Huckleberry Finn - https://www.gutenberg.org/ebooks/76 - свободно, починал 1910
+152. Mark Twain - A Connecticut Yankee in King Arthur's Court - https://www.gutenberg.org/ebooks/86 - свободно, починал 1910
+153. Charles Dickens - Great Expectations - https://www.gutenberg.org/ebooks/1400 - свободно, починал 1870
+154. Charles Dickens - A Christmas Carol - https://www.gutenberg.org/ebooks/46 - свободно, починал 1870
+155. Charles Dickens - Oliver Twist - https://www.gutenberg.org/ebooks/730 - свободно, починал 1870
+156. Charles Dickens - David Copperfield - https://www.gutenberg.org/ebooks/766 - свободно, починал 1870
+157. Charles Dickens - A Tale of Two Cities - https://www.gutenberg.org/ebooks/98 - свободно, починал 1870
+158. Charles Dickens - The Pickwick Papers - https://www.gutenberg.org/ebooks/580 - свободно, починал 1870
+159. Charles Dickens - Bleak House - https://www.gutenberg.org/ebooks/1023 - свободно, починал 1870
+160. Oscar Wilde - The Picture of Dorian Gray - https://www.gutenberg.org/ebooks/174 - свободно, починал 1900
+161. Bram Stoker - Dracula - https://www.gutenberg.org/ebooks/345 - свободно, починал 1912
+162. Mary Shelley - Frankenstein - https://www.gutenberg.org/ebooks/84 - свободно, починал 1851
+163. Charlotte Brontë - Jane Eyre - https://www.gutenberg.org/ebooks/1260 - свободно, починал 1855
+164. Emily Brontë - Wuthering Heights - https://www.gutenberg.org/ebooks/768 - свободно, починал 1848
+165. Robert Louis Stevenson - Treasure Island - https://www.gutenberg.org/ebooks/120 - свободно, починал 1894
+166. Robert Louis Stevenson - Dr. Jekyll and Mr. Hyde - https://www.gutenberg.org/ebooks/43 - свободно, починал 1894
+167. Jerome K. Jerome - Three Men in a Boat - https://www.gutenberg.org/ebooks/308 - свободно, починал 1927
+168. Jack London - The Call of the Wild - https://www.gutenberg.org/ebooks/215 - свободно, починал 1916
+169. Jack London - White Fang - https://www.gutenberg.org/ebooks/910 - свободно, починал 1916
+170. H. G. Wells - The Time Machine - https://www.gutenberg.org/ebooks/35 - свободно, починал 1946
+171. H. G. Wells - The War of the Worlds - https://www.gutenberg.org/ebooks/36 - свободно, починал 1946
+172. H. G. Wells - The Invisible Man - https://www.gutenberg.org/ebooks/5230 - свободно, починал 1946
+173. Joseph Conrad - Heart of Darkness - https://www.gutenberg.org/ebooks/219 - свободно, починал 1924
+174. O. Henry - The Four Million, разкази - https://www.gutenberg.org/ebooks/2776 - свободно, починал 1910
+175. James Joyce - Dubliners, разкази - https://www.gutenberg.org/ebooks/2814 - свободно, починал 1941
+176. F. Scott Fitzgerald - The Great Gatsby - https://www.gutenberg.org/ebooks/64317 - свободно, починал 1940
+177. Herman Melville - Moby Dick - https://www.gutenberg.org/ebooks/2701 - свободно, починал 1891
+178. Nathaniel Hawthorne - The Scarlet Letter - https://www.gutenberg.org/ebooks/33 - свободно, починал 1864
+179. Washington Irving - The Legend of Sleepy Hollow - https://www.gutenberg.org/ebooks/41 - свободно, починал 1859
+180. Jonathan Swift - Gulliver's Travels - https://www.gutenberg.org/ebooks/829 - свободно, починал 1745
+181. Daniel Defoe - Robinson Crusoe - https://www.gutenberg.org/ebooks/521 - свободно, починал 1731
+182. Alexandre Dumas - The Count of Monte Cristo (анонимен превод от 1846) - https://www.gutenberg.org/ebooks/1184 - свободно, починал 1870
+183. Alexandre Dumas - The Three Musketeers - https://www.gutenberg.org/ebooks/1257 - свободно, починал 1870
+184. Dostoyevsky - Crime and Punishment - https://www.gutenberg.org/ebooks/2554 - свободно, починал 1946
+185. Dostoyevsky - The Brothers Karamazov - https://www.gutenberg.org/ebooks/28054 - свободно, починал 1946
+186. Tolstoy - Anna Karenina - https://www.gutenberg.org/ebooks/1399 - свободно, починал 1939
+187. Tolstoy - War and Peace, много голяма - https://www.gutenberg.org/ebooks/2600 - свободно, починал 1939
+188. Lewis Carroll - Alice's Adventures in Wonderland - https://www.gutenberg.org/ebooks/11 - свободно, починал 1898
+189. Lewis Carroll - Through the Looking-Glass - https://www.gutenberg.org/ebooks/12 - свободно, починал 1898
+190. L. Frank Baum - The Wonderful Wizard of Oz - https://www.gutenberg.org/ebooks/55 - свободно, починал 1919
+191. J. M. Barrie - Peter Pan - https://www.gutenberg.org/ebooks/16 - свободно, починал 1937
+192. Kenneth Grahame - The Wind in the Willows - https://www.gutenberg.org/ebooks/289 - свободно, починал 1932
+193. L. M. Montgomery - Anne of Green Gables - https://www.gutenberg.org/ebooks/45 - свободно, починал 1942
+194. Louisa May Alcott - Little Women - https://www.gutenberg.org/ebooks/514 - свободно, починал 1888
+195. Frances Hodgson Burnett - The Secret Garden - https://www.gutenberg.org/ebooks/113 - свободно, починал 1924
+196. Rudyard Kipling - The Jungle Book - https://www.gutenberg.org/ebooks/236 - свободно, починал 1936
+197. Rudyard Kipling - Just So Stories - https://www.gutenberg.org/ebooks/2781 - свободно, починал 1936
+198. Jacob and Wilhelm Grimm - Grimms' Fairy Tales (превод Margaret Hunt, починала 1912) - https://www.gutenberg.org/ebooks/2591 - свободно, починал 1912
+199. Hans Christian Andersen - Andersen's Fairy Tales (стар превод от 19 век) - https://www.gutenberg.org/ebooks/1597 - свободно, починал 1875
+200. OPUS - DGT-TM bg-en, преводаческата памет на Европейската комисия, български - https://object.pouta.csc.fi/OPUS-DGT/v2019/moses/bg-en.txt.zip#bg - свободно, повторна употреба по Решение 2011/833/ЕС с посочване на източника: DGT-TM, издание v2019 през OPUS, собственост на Европейската комисия
+201. OPUS - DGT-TM bg-en, преводаческата памет на Европейската комисия, английски - https://object.pouta.csc.fi/OPUS-DGT/v2019/moses/bg-en.txt.zip#en - свободно, повторна употреба по Решение 2011/833/ЕС с посочване на източника: DGT-TM, издание v2019 през OPUS, собственост на Европейската комисия
+202. OPUS - EU Bookshop bg-en, публикации на ЕС, български - https://object.pouta.csc.fi/OPUS-EUbookshop/v2/moses/bg-en.txt.zip#bg - свободно, повторна употреба по Решение 2011/833/ЕС
+203. OPUS - EU Bookshop bg-en, публикации на ЕС, английски - https://object.pouta.csc.fi/OPUS-EUbookshop/v2/moses/bg-en.txt.zip#en - свободно, повторна употреба по Решение 2011/833/ЕС
+204. OPUS - Europarl v8 bg-en, стенограми на Европейския парламент, български - https://object.pouta.csc.fi/OPUS-Europarl/v8/moses/bg-en.txt.zip#bg - свободно, без известни ограничения (Europarl, statmt.org)
+205. OPUS - Europarl v8 bg-en, стенограми на Европейския парламент, английски - https://object.pouta.csc.fi/OPUS-Europarl/v8/moses/bg-en.txt.zip#en - свободно, без известни ограничения (Europarl, statmt.org)
+206. OPUS - Tatoeba bg-en, кратки битови изречения, български - https://object.pouta.csc.fi/OPUS-Tatoeba/v2023-04-12/moses/bg-en.txt.zip#bg - свободно, CC BY 2.0 FR (tatoeba.org)
+207. OPUS - Tatoeba bg-en, кратки битови изречения, английски - https://object.pouta.csc.fi/OPUS-Tatoeba/v2023-04-12/moses/bg-en.txt.zip#en - свободно, CC BY 2.0 FR (tatoeba.org)

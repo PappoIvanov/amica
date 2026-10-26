@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 CLEAN = ROOT / "data" / "clean"
 SKIP = {"literature.txt"}   # файлове в data/raw, които не са текст за модела
+SKIP_PREFIX = ("razgovori",)   # разговорите за дообучаването (етап 5) не са текст за корпуса: минават през build_dialogues.py
 
 # латински букви, които изглеждат като кирилица; заменят се само вътре в думата на кирилица
 HOMOGLYPHS = str.maketrans("aceopxyABCEHKMOPTX", "асеорхуАВСЕНКМОРТХ")
@@ -121,7 +122,7 @@ def split_documents(text):
 def process (path):
     log = Counter()
     raw = path.read_text(encoding="utf-8-sig")
-    text = normalize_text(raw, log, english=path.name.startswith("wikipedia_en_"))
+    text = normalize_text(raw, log, english=path.name.startswith(("wikipedia_en_", "wikipedia_enfull_", "gutenberg_")) or path.name.endswith("_en.txt"))
     docs = split_documents(text)
     out = []
     for title, body in docs:
@@ -151,7 +152,7 @@ def process (path):
 
 
 CLEAN.mkdir(exist_ok=True)
-files = [f for f in sorted(RAW.glob("*.txt")) if f.name not in SKIP]
+files = [f for f in sorted(RAW.glob("*.txt")) if f.name not in SKIP and not f.name.startswith(SKIP_PREFIX)]
 if not files:
     print("There isn't files in data/raw")
     sys.exit(1)
