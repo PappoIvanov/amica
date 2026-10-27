@@ -39,7 +39,7 @@ BASE = Path(os.environ.get("BASE", ROOT / "checkpoints" / "amica-v2.pt"))
 DIALOGUES = Path(os.environ.get("DIALOGUES", ROOT / "data" / "clean" / "dialogues.jsonl"))
 TOKENS = Path(os.environ.get("TOKENS", ROOT / "data" / "clean" / "tokens"))
 RUN = os.environ.get("RUN", time.strftime("%Y%m%d-%H%M"))
-CHECKPOINT = ROOT / "checkpoints" / f"amica-v2-sft-{RUN}.pt"
+CHECKPOINT = ROOT / "checkpoints" / f"{BASE.stem}-sft-{RUN}.pt"
 LOG = CHECKPOINT.with_suffix(".csv")
 MAX_STEPS = int(os.environ.get("MAX_STEPS", 300))
 BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 8))         # разговори на стъпка
@@ -56,7 +56,7 @@ records = [json.loads(line) for line in open(DIALOGUES, encoding="utf-8")]
 
 
 def number_of(record):
-    return int(record["id"].split("/")[1])
+    return int(record["id"].split("/")[1].split("+")[0])
 
 
 train_records = [r for r in records if number_of(r) % 10 != 7]
@@ -68,13 +68,13 @@ numbers = list(groups)
 print(f"dialogues: {len(train_records)} train records in {len(numbers)} conversations, "
       f"{len(val_records)} val (numbers ending in 7), device: {DEVICE}")
 
+REPLAY_PROBS = {"lit": 0.08, "bg_wiki": 0.52, "en": 0.32, "law": 0.08}
 replay = {}
 if TOKENS.exists():
-    for name in ["lit", "bg_wiki", "en"]:
+    for name in list(REPLAY_PROBS):
         replay[name] = np.fromfile(TOKENS / f"{name}_train.bin", dtype=np.uint16)
 else:
     print(f"warning: {TOKENS} not found, training without replay")
-REPLAY_PROBS = {"lit": 0.1, "bg_wiki": 0.6, "en": 0.3}
 
 
 def sample_batch():

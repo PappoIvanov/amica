@@ -31,6 +31,7 @@ SOURCE = ROOT / "data" / "raw" / "razgovori.txt"
 OUT = ROOT / "data" / "clean" / "dialogues.jsonl"
 VARIANTS = int(os.environ.get("VARIANTS", 200))
 SEED = 42
+PAIR = float(os.environ.get("PAIR", 0.3))
 TOOL_POOL = ["clock", "date", "calc", "remember", "read", "web"]   # откъдето идват случайните инструменти
 NO_TOOLS = "Инструменти: няма."
 
@@ -164,15 +165,20 @@ if __name__ == "__main__":
 
     rng = random.Random(SEED)
     records = []
+    free = [c for c in conversations if c[1][0]["role"] != "system" and c[0] % 10 != 7]   # val (номер на 7) не се залепва, за да е чиста проверката
     for number, turns in conversations:
         seen = set()
         for k in range(VARIANTS):
-            copy = with_system(fill(turns, random_values(rng)), rng)
+            partner = None
+            if turns[0]["role"] != "system" and number % 10 != 7 and rng.random() < PAIR:
+                partner = rng.choice([c for c in free if c[0] != number])
+            pair = turns + partner[1] if partner else turns
+            copy = with_system(fill(pair, random_values(rng)), rng)
             key = json.dumps(copy, ensure_ascii=False)
             if key in seen:
                 continue                                   # еднакво копие, без шаблони и със същия системен ред
             seen.add(key)
-            records.append({"id": f"razgovori/{number}/{len(seen):02d}", "turns": copy})
+            records.append({"id": f"razgovori/{number}{'+' + str(partner[0]) if partner else ''}/{len(seen):02d}", "turns": copy})
 
     OUT.parent.mkdir(exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:

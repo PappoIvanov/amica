@@ -2,7 +2,7 @@
 Амика · етап 5 · терминален разговор с роли.
 За разлика от app/chat.py (който продължава текст), тук Амика отговаря: разговорът се пази като
 реплики, мислите ѝ се показват бледо, извикванията на инструменти се изпълняват от app/engine.py.
-Пускане от папката на проекта: py app/talk.py            (по подразбиране checkpoints/amica-v2-sft.pt)
+Пускане от папката на проекта: py app/talk.py            (по подразбиране checkpoints/amica-v3-sft.pt)
                                py app/talk.py checkpoints/amica-v2-sft-local1.pt
 Команди в разговора: празен ред за край, /new за нов разговор, /think за показване или скриване на мислите.
 """
@@ -17,7 +17,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 DIM, RESET = "\033[2m", "\033[0m"   # бледо и обратно, работи в PowerShell и Windows Terminal
 
-checkpoint = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "checkpoints" / "amica-v2-sft.pt"
+checkpoint = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "checkpoints" / "amica-v3-sft.pt"
 engine = Engine(checkpoint)
 show_thoughts = True
 turns = [engine.system_turn()]

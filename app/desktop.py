@@ -22,7 +22,7 @@ import webview
 ROOT = Path(__file__).resolve().parents[1]
 UI = ROOT / "app" / "ui"
 HOME = Path.home() / "Documents" / "Amica"      # данните на Амика: памет, разговори, дневници
-CHECKPOINT = ROOT / "checkpoints" / "amica-v2-sft.pt"
+CHECKPOINT = ROOT / "checkpoints" / "amica-v3-sft.pt"
 # кога се сменя поздравът: „Добро утро“ от 3:00, „Добър ден“ от 9:00, „Добър вечер“ от 19:01 до 2:59
 MORNING_FROM, DAY_FROM, EVENING_FROM = datetime.time(3, 0), datetime.time(9, 0), datetime.time(19, 1)
 
