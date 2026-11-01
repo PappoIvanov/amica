@@ -7,7 +7,9 @@
 в заглавието на суровия файл, а авторът и статусът от ред N в literature.txt.
 Пускане от папката на проекта: py data/build_corpus.py
 """
+import hashlib
 import json
+import os
 import re
 import sys
 from collections import Counter
@@ -76,22 +78,41 @@ def clean_documents(path):
     return docs
 
 
-def write_corpus(name, docs):
-    # .jsonl: по един документ на ред, с всички полета; за обучение и публикуване
-    with open(CLEAN / f"{name}.jsonl", "w", encoding="utf-8") as f:
-        for d in docs:
-            f.write(json.dumps(d, ensure_ascii=False) + "\n")
-    # .txt: само текстът, за четене с очи и за символните модели
-    with open(CLEAN / f"{name}.txt", "w", encoding="utf-8") as f:
-        for d in docs:
-            if d["title"]:
-                f.write(d["title"] + "\n\n")
-            f.write(d["text"] + "\n\n\n")
+TXT = os.environ.get("TXT", "1") != "0"       # TXT=0: без .txt изходите (при 7B знака те удвояват записа на диска)
+LOCAL = os.environ.get("LOCAL", "1") != "0"   # LOCAL=0: само corpus_public (corpus_local е същото плюс защитените)
+
+
+class CorpusWriter:
+    # Пише документите един по един, докато пристигат, вместо да ги събира в списък:
+    # при 7B знака (v4) списъкът не се събира в паметта (две копия на текста са над 17 GB).
+    def __init__(self, name):
+        self.name, self.docs, self.chars = name, 0, 0
+        # .jsonl: по един документ на ред, с всички полета; за обучение и публикуване
+        self.jsonl = open(CLEAN / f"{name}.jsonl", "w", encoding="utf-8")
+        # .txt: само текстът, за четене с очи и за символните модели
+        self.txt = open(CLEAN / f"{name}.txt", "w", encoding="utf-8") if TXT else None
+
+    def add(self, doc):
+        self.jsonl.write(json.dumps(doc, ensure_ascii=False) + "\n")
+        if self.txt:
+            if doc["title"]:
+                self.txt.write(doc["title"] + "\n\n")
+            self.txt.write(doc["text"] + "\n\n\n")
+        self.docs += 1
+        self.chars += doc["chars"]
+
+    def close(self):
+        self.jsonl.close()
+        if self.txt:
+            self.txt.close()
 
 
 sources = read_sources()
-local, public, rows = [], [], []
-seen_texts = {}   # нормализиран текст -> id на първия документ с този текст (една приказка в два сборника)
+writers = {"corpus_public": CorpusWriter("corpus_public")}
+if LOCAL:
+    writers["corpus_local"] = CorpusWriter("corpus_local")
+rows = []
+seen_texts = {}   # отпечатък на нормализирания текст -> id на първия документ с този текст (една приказка в два сборника)
 for path in sorted(CLEAN.glob("*.txt")):
     if path.name.startswith("corpus_"):   # нашите собствени изходи от предишно пускане
         continue
@@ -122,25 +143,29 @@ for path in sorted(CLEAN.glob("*.txt")):
             "chars": len(body),
             "text": body,
         }
-        key = " ".join(body.split())
+        # отпечатък от 16 байта вместо самия текст: иначе ключовете са второ копие на целия корпус
+        key = hashlib.blake2b(" ".join(body.split()).encode("utf-8"), digest_size=16).digest()
         if key in seen_texts:
             print(f"duplicate: {doc['id']} is the same text as {seen_texts[key]}, skipped")
             continue
         seen_texts[key] = doc["id"]
-        local.append(doc)
+        if LOCAL:
+            writers["corpus_local"].add(doc)
         if license_ in ("public-domain", "cc-by-sa"):
-            public.append(doc)
+            writers["corpus_public"].add(doc)
         file_chars += len(body)
         file_licenses[license_] += 1
     rows.append((path.name, len(docs), file_chars, ", ".join(f"{k}: {v}" for k, v in file_licenses.items())))
+    print(f"{path.name}: {len(docs)} documents, {file_chars:,} chars", flush=True)
 
-write_corpus("corpus_local", local)
-write_corpus("corpus_public", public)
+for w in writers.values():
+    w.close()
 
 print(f"{'file':24} {'doc.':>5} {'signs':>8}  license")
 for name, n_docs, chars, lic in rows:
     print(f"{name:24} {n_docs:5d} {chars:8d}  {lic}")
 print()
-for name, docs in [("corpus_local", local), ("corpus_public", public)]:
-    chars = sum(d["chars"] for d in docs)
-    print(f"{name}: {len(docs)} documents, {chars} characters, {chars / 1e6:.2f} millions")
+for name in ("corpus_local", "corpus_public"):
+    if name in writers:
+        w = writers[name]
+        print(f"{name}: {w.docs} documents, {w.chars} characters, {w.chars / 1e6:.2f} millions")

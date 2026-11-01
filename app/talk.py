@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "app"))
-from engine import Engine
+from engine import Engine, name_from_memory
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -20,8 +20,9 @@ DIM, RESET = "\033[2m", "\033[0m"   # бледо и обратно, работи
 checkpoint = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "checkpoints" / "amica-v3-sft.pt"
 engine = Engine(checkpoint)
 show_thoughts = True
-turns = [engine.system_turn()]
-print(f"Amica ({checkpoint.name}). Tools: {engine.system_turn()['text']}")
+name = name_from_memory(Path.home() / "Documents" / "Amica" / "memory.txt")   # същият файл като в приложението
+turns = [engine.system_turn(name)]
+print(f"Amica ({checkpoint.name}). System: {turns[0]['text']}")
 print("Empty line to quit, /new for a new conversation, /think to toggle thoughts.")
 
 while True:
@@ -32,7 +33,7 @@ while True:
     if not text:
         break
     if text == "/new":
-        turns = [engine.system_turn()]
+        turns = [engine.system_turn(name)]
         print("(new conversation)")
         continue
     if text == "/think":

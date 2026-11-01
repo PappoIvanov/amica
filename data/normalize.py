@@ -122,7 +122,8 @@ def split_documents(text):
 def process (path):
     log = Counter()
     raw = path.read_text(encoding="utf-8-sig")
-    text = normalize_text(raw, log, english=path.name.startswith(("wikipedia_en_", "wikipedia_enfull_", "gutenberg_")) or path.name.endswith("_en.txt"))
+    # английските файлове и двуезичните двойки (opus_*_pairs.txt, от 2026-10-31) минават без българските поправки
+    text = normalize_text(raw, log, english=path.name.startswith(("wikipedia_en_", "wikipedia_enfull_", "gutenberg_")) or path.name.endswith(("_en.txt", "_pairs.txt")))
     docs = split_documents(text)
     out = []
     for title, body in docs:

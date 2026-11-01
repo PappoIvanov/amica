@@ -4,8 +4,10 @@
 Чете data/raw/_opus/opus_<източник>.zip (форматът „moses“: вътре bg-en.bg и bg-en.en, едно изречение на ред,
 ред N в единия файл е преводът на ред N в другия) и прави от тях текст за предобучението: последователни
 изречения се слепват на блокове по BLOCK реда, всеки блок е документ „# Europarl v8, български, блок N (M.)“,
-отделно за двата езика: data/raw/opus_<източник>_bg.txt и opus_<източник>_en.txt. Двойките за превода
-(етап 5) ще се вадят от същите zip файлове по-късно, не оттук.
+отделно за двата езика: data/raw/opus_<източник>_bg.txt и opus_<източник>_en.txt. От 2026-10-31 (v4) пише и
+opus_<източник>_pairs.txt: документи с двойки „български ||| английски“, за да научи предобучението
+съответствието между езиците (таван CAP_<ИЗТОЧНИК>_PAIRS, 0 го изключва). Двойките за дообучението (етап 5)
+ще се вадят от същите zip файлове отделно.
 Корпусите са големи (DGT е над 600 MB на език), а официалният регистър е сух, затова всеки източник има
 таван на знаците за всеки език (CAPS, в знаци; може да се смени от средата, например CAP_DGT_BG=25e6).
 За да не се вземе само началото на файла, блоковете се взимат през равни стъпки по цялата дължина.
@@ -43,6 +45,16 @@ SOURCES = {   # ключ: (заглавие, адрес, статус, тава�
     "dgt": ("DGT-TM bg-en, преводаческата памет на Европейската комисия",
             "https://object.pouta.csc.fi/OPUS-DGT/v2019/moses/bg-en.txt.zip",
             "свободно, повторна употреба по Решение 2011/833/ЕС с посочване на източника: DGT-TM, издание v2019 през OPUS, собственост на Европейската комисия", 25e6, 15e6),
+    # трите нови архива за v4 (2026-10-31, DOWNLOAD_LIST_3.md, раздел 3): малки, затова таваните са над размера им
+    "jrc_acquis": ("JRC-Acquis v3.0 bg-en, законодателство на ЕС",
+                   "https://object.pouta.csc.fi/OPUS-JRC-Acquis/v3.0/moses/bg-en.txt.zip",
+                   "свободно, повторна употреба по Решение 2011/833/ЕС с посочване на източника", 50e6, 50e6),
+    "wikimatrix": ("WikiMatrix v1 bg-en, автоматично подравнени изречения от Уикипедия",
+                   "https://object.pouta.csc.fi/OPUS-WikiMatrix/v1/moses/bg-en.txt.zip",
+                   "свободно, CC BY-SA 4.0 (текст от Уикипедия) с посочване на източника", 100e6, 100e6),
+    "globalvoices": ("GlobalVoices v2018q4 bg-en, новини",
+                     "https://object.pouta.csc.fi/OPUS-GlobalVoices/v2018q4/moses/bg-en.txt.zip",
+                     "свободно, CC BY 3.0 (globalvoices.org)", 10e6, 10e6),
 }
 LANG_NAME = {"bg": "български", "en": "английски"}
 WORD = re.compile(r"\w+")
@@ -83,6 +95,33 @@ def blocks_from_zip(path, lang, cap):
     return docs, chars
 
 
+def pairs_from_zip(path, cap):
+    """Документи с двойки за превода (v4): блокове по BLOCK реда „български ||| английски“, взети през равни
+    стъпки по целия файл до тавана cap (знаци на двата езика заедно). Ред N в единия файл е преводът на ред N
+    в другия; двойките с празна или много къса страна падат."""
+    with zipfile.ZipFile(path) as zf:
+        bg_member = next(n for n in zf.namelist() if n.endswith(".bg"))
+        en_member = next(n for n in zf.namelist() if n.endswith(".en"))
+        est_chars = zf.getinfo(bg_member).file_size / 2 + zf.getinfo(en_member).file_size
+        stride = max(1, int(est_chars / cap)) if cap else 1
+        docs, current, chars, block_no = [], [], 0, 0
+        with io.TextIOWrapper(zf.open(bg_member), encoding="utf-8", errors="replace") as fb, \
+             io.TextIOWrapper(zf.open(en_member), encoding="utf-8", errors="replace") as fe:
+            for bg, en in zip(fb, fe):
+                bg, en = " ".join(bg.split()), " ".join(en.split())
+                if len(WORD.findall(bg)) < MIN_WORDS or len(WORD.findall(en)) < MIN_WORDS:
+                    continue
+                current.append(f"{bg} ||| {en}")
+                if len(current) == BLOCK:
+                    if block_no % stride == 0:
+                        docs.append(current)
+                        chars += sum(len(s) + 1 for s in current)
+                    current, block_no = [], block_no + 1
+                    if chars >= cap:
+                        break
+    return docs, chars
+
+
 def main():
     zips = sorted(INBOX.glob("opus_*.zip"))
     if not zips:
@@ -98,6 +137,26 @@ def main():
         title, url, status, cap_bg, cap_en = SOURCES[key]
         caps = {"bg": float(os.environ.get(f"CAP_{key.upper()}_BG", cap_bg)),
                 "en": float(os.environ.get(f"CAP_{key.upper()}_EN", cap_en))}
+        # двойките за v4 (2026-10-31): отделен файл opus_<източник>_pairs.txt и свой ред в literature.txt (#pairs);
+        # таванът е CAP_<ИЗТОЧНИК>_PAIRS, по подразбиране колкото българския; 0 изключва двойките
+        pairs_cap = float(os.environ.get(f"CAP_{key.upper()}_PAIRS", cap_bg))
+        if pairs_cap > 0:
+            docs, chars = pairs_from_zip(path, pairs_cap)
+            src_url = f"{url}#pairs"
+            if src_url in entries:
+                source = entries[src_url]
+            else:
+                number += 1
+                source = entries[src_url] = number
+                new_lines.append(f"{number}. OPUS - {title}, двойки bg-en - {src_url} - {status}")
+            out = []
+            for i, block in enumerate(docs, 1):
+                out += [f"# {title.split(',')[0]}, двойки bg-en, блок {i} ({source}.)", ""]
+                for pair in block:
+                    out += [pair, ""]
+            target = RAW / f"opus_{key}_pairs.txt"
+            target.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+            print(f"  {path.name} [pairs] -> {target.name}: {len(docs)} blocks, {chars:,} chars (cap {pairs_cap:,.0f}), source {source}")
         for lang in ("bg", "en"):
             docs, chars = blocks_from_zip(path, lang, caps[lang])
             src_url = f"{url}#{lang}"

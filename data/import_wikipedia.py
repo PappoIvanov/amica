@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 # два езика с еднакъв конвейер: папка с parquet, подпапка в набора на Уикимедия, име за literature.txt,
 # представка на изходните файлове, таван, азбука на езика, раздели в края на статията и заглавия за прескачане
-WIKI = os.environ.get("WIKI", "bg")                    # bg, en (Simple English) или en_full (пълната английска)
+WIKI = os.environ.get("WIKI", "bg")                    # bg, en (Simple English), en_full (пълната английска) или wikisource_bg
 SETTINGS = {
     "bg": dict(inbox="_wikipedia", subset="20231101.bg", title="Българска Уикипедия", prefix="wikipedia_",
                max_chars=200e6, script=r"[\u0400-\u04FF]",
@@ -42,13 +42,24 @@ SETTINGS = {
                tail={"references", "notes", "footnotes", "sources", "see also", "external links", "further reading",
                      "bibliography", "gallery", "citations", "explanatory notes"},
                skip_title=r"^(List of |Lists of |Category:|Template:|Portal:|Wikipedia:)|\(disambiguation\)$"),
+    # Българският Уикиизточник (2026-10-31, за v4): същият parquet формат, друг набор на Уикимедия (wikisource).
+    # Вътре са литература с изтекли права, закони и документи; текстовете преди 1945 г. са със стария правопис
+    # и падат по буквите ѣ и ѫ (old_orthography), както при стенограмите.
+    "wikisource_bg": dict(inbox="_wikisource_bg", subset="20231201.bg", dataset="wikisource", title="Български Уикиизточник",
+               prefix="wikisource_", max_chars=100e6, script=r"[Ѐ-ӿ]", old_orthography=True,
+               status="свободно, CC BY-SA 4.0 за страниците; текстовете са обществено достояние или нормативни актове; извадка на Уикимедия от 2023-12-01",
+               tail={"източници", "бележки", "литература", "външни препратки", "вижте също", "библиография"},
+               skip_title=r"^(Категория:|Шаблон:|Портал:|Уикиизточник:|Индекс:|Страница:|Автор:|Беседа:)"),
 }[WIKI]
 INBOX = RAW / SETTINGS["inbox"]
 LITERATURE = RAW / "literature.txt"
-URL = f"https://huggingface.co/datasets/wikimedia/wikipedia/tree/main/{SETTINGS['subset']}"
+URL = f"https://huggingface.co/datasets/wikimedia/{SETTINGS.get('dataset', 'wikipedia')}/tree/main/{SETTINGS['subset']}"
 TITLE = SETTINGS["title"]
 PREFIX = SETTINGS["prefix"]
-STATUS = "свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01"
+STATUS = SETTINGS.get("status", "свободно, CC BY-SA 4.0, извадка на Уикимедия от 2023-11-01")
+OLD_ORTHOGRAPHY = SETTINGS.get("old_orthography", False)     # статии със стари букви над OLD_LETTERS на 10 000 знака падат
+OLD_LETTERS = float(os.environ.get("OLD_LETTERS", 5))
+OLD = re.compile(r"[ѣѫѭѢѪѬ]")
 MAX_CHARS = int(float(os.environ.get("MAX_CHARS", SETTINGS["max_chars"])))   # таван за целия източник
 MIN_CHARS = int(os.environ.get("MIN_CHARS", 1000))           # по-късите статии са мънички и падат
 SEED = int(os.environ.get("SEED", 42))                       # за повторим случаен подбор
@@ -118,6 +129,9 @@ def main():
             if chars < MIN_CHARS:
                 stats["skipped: shorter than MIN_CHARS after cleaning"] += 1
                 continue
+            if OLD_ORTHOGRAPHY and len(OLD.findall(" ".join(paragraphs))) * 10000 / chars > OLD_LETTERS:
+                stats["skipped: old orthography"] += 1
+                continue
             articles.append((title, paragraphs, chars))
         print(f"{path.name}: {stats['read']:,} articles read so far, {len(articles):,} usable")
 
@@ -152,5 +166,76 @@ def main():
     print(f"kept: {len(kept):,} articles, {total:,} chars (MAX_CHARS={MAX_CHARS:,}, MIN_CHARS={MIN_CHARS})")
 
 
+def usable_articles(path, stats):
+    """Статиите от един parquet файл, които минават филтрите: (заглавие, абзаци, брой знаци), една по една."""
+    table = pq.read_table(path, columns=["title", "text"])
+    for title, text in zip(table.column("title").to_pylist(), table.column("text").to_pylist()):
+        stats["read"] += 1
+        title = " ".join(title.split())
+        if SKIP_TITLE.search(title):
+            stats["skipped: list or disambiguation"] += 1
+            continue
+        paragraphs = clean_article(text)
+        chars = sum(len(p) for p in paragraphs)
+        if chars < MIN_CHARS:
+            stats["skipped: shorter than MIN_CHARS after cleaning"] += 1
+            continue
+        if OLD_ORTHOGRAPHY and len(OLD.findall(" ".join(paragraphs))) * 10000 / chars > OLD_LETTERS:
+            stats["skipped: old orthography"] += 1
+            continue
+        yield title, paragraphs, chars
+
+
+def main_stream():
+    """Същото като main, но на два прохода и без да държи всички статии в паметта (STREAM=1, за v4: 10 части
+    на английската Уикипедия са около 9 милиарда знака). Първият проход само брои годните знаци, вторият пази
+    всяка статия с вероятност MAX_CHARS / годни и пише частите веднага. Редът е по файлове, не по азбучен ред."""
+    files = sorted(INBOX.glob("*.parquet"))
+    if not files:
+        print(f"no .parquet files in {INBOX}")
+        return
+    number = source_number()
+    stats, usable, count = Counter(), 0, 0
+    for path in files:
+        for _, _, chars in usable_articles(path, stats):
+            usable += chars
+            count += 1
+        print(f"pass 1 {path.name}: {stats['read']:,} read so far, {count:,} usable, {usable:,} chars")
+    share = min(1.0, MAX_CHARS / usable) if usable else 0
+    print(f"pass 1 done: {count:,} usable articles, {usable:,} chars; keeping share {share:.3f}")
+    for old in RAW.glob(f"{PREFIX}[0-9]*.txt"):
+        old.unlink()
+    rng, out, part, kept, total = random.Random(SEED), [], 0, 0, 0
+
+    def flush():
+        nonlocal out, part
+        if out:
+            target = RAW / f"{PREFIX}{part:02d}.txt"
+            target.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+            print(f"wrote {target.name}")
+            out, part = [], part + 1
+
+    stats = Counter()
+    for path in files:
+        in_file = 0
+        for title, paragraphs, chars in usable_articles(path, stats):
+            if rng.random() >= share:
+                continue
+            out.append(f"# {title} ({number}.)")
+            out.append("")
+            for p in paragraphs:
+                out.append(p)
+                out.append("")
+            kept, total, in_file = kept + 1, total + chars, in_file + 1
+            if in_file % PER_FILE == 0:
+                flush()
+        flush()
+        print(f"pass 2 {path.name}: kept {kept:,} so far, {total:,} chars")
+    for k, v in stats.most_common():
+        if k != "read":
+            print(f"  {k}: {v:,}")
+    print(f"kept: {kept:,} articles, {total:,} chars (MAX_CHARS={MAX_CHARS:,}, MIN_CHARS={MIN_CHARS}, STREAM)")
+
+
 if __name__ == "__main__":
-    main()
+    main_stream() if os.environ.get("STREAM") == "1" else main()

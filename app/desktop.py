@@ -18,6 +18,7 @@ import time
 from pathlib import Path
 
 import webview
+import ctypes
 
 ROOT = Path(__file__).resolve().parents[1]
 UI = ROOT / "app" / "ui"
@@ -44,7 +45,7 @@ class Api:
 
     def new_chat(self):
         with self.lock:
-            self.turns = [self.engine.system_turn()] if self.engine else []
+            self.turns = [self.engine.system_turn(user_name() or None)] if self.engine else []
         return {"greeting": greeting()}
 
     def send(self, text):
@@ -54,7 +55,7 @@ class Api:
             return {"error": "The model is still loading, one moment.", "turns": []}
         with self.lock:
             if not self.turns:
-                self.turns = [self.engine.system_turn()]
+                self.turns = [self.engine.system_turn(user_name() or None)]
             self.turns.append({"role": "user", "text": text})
             started = time.perf_counter()
             new = self.engine.respond(self.turns)
@@ -108,16 +109,17 @@ def load_engine(api, window):
     started = time.perf_counter()
     api.engine = Engine(CHECKPOINT)
     api.tools = list(TOOLS)
-    api.turns = [api.engine.system_turn()]
+    api.turns = [api.engine.system_turn(user_name() or None)]     # „Име: Павел.“ от memory.txt влиза в системния ред
     print(f"Model loaded in {time.perf_counter() - started:.1f} s: {api.status()['model']}")
     window.evaluate_js("modelReady()")      # Python → JS: страницата обновява чипа и отключва полето
 
 
 if __name__ == "__main__":
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("PavelIvanov.Amica")
     prepare_home()
     print(f"Amica data folder: {HOME}")
     api = Api()
     window = webview.create_window("Amica", str(UI / "index.html"), js_api=api,
                                    width=1280, height=820, min_size=(960, 640),
                                    background_color="#0B0B0C")
-    webview.start(load_engine, (api, window))
+    webview.start(load_engine, (api, window), icon=str(ROOT / "assets" / "amica.ico"))

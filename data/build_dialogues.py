@@ -7,13 +7,19 @@
 Грешките във формата се изброяват всичките наведнъж, с номера на разговора, и нищо не се записва.
 
 Всеки разговор се разгъва VARIANTS пъти (SEED 42). В копията се сменят две неща:
-  1. шаблоните {час}, {дата}, {a}, {b}, {a*b}, {a+b}, {a-b}, {име}, {число}, двойката {m} < {n}
+  1. шаблоните {час}, {дата}, {a}, {b}, {a*b}, {a+b}, {a-b}, {име} (потребителят), {друг} (друг човек,
+     винаги различно име от {име}; от 2026-10-31), {число}, двойката {m} < {n}
      с {n-m} и {n+m}, {град} и {прогноза}: така единственото общо между копията е „каквото пише
      в реда Резултат:, това казвам“ и Амика се учи да преписва от резултата, не да помни стойност;
   2. системният ред: обявените инструменти плюс до два случайни допълнителни, а разговор без ред
      „Система:“ получава случаен списък (понякога празен, „Инструменти: няма.“). Иначе моделът учи
      „има списък с инструменти, значи питат за час“, както стана при първото дообучаване.
+     От 2026-10-31 редът може да носи и „Име: {име}.“ (приложението го взима от memory.txt): разговор с
+     „Система: Име: {име}.“ го пази във всички копия, а всеки друг го получава в NAME_P от копията, за да
+     не значи „има име, значи поздрав“.
 Еднаквите копия се пазят веднъж.
+Ред „Амика: =“ или „Мисли: =“ значи същата реплика като в предишния разговор (k-тата реплика на същата роля):
+така формулировките на една ситуация се пишат веднъж, а отговорът само в първата (чернова от 2026-10-31).
 Пускане от папката на проекта: py data/build_dialogues.py        (VARIANTS=200 от средата сменя броя)
 """
 import json
@@ -34,6 +40,9 @@ SEED = 42
 PAIR = float(os.environ.get("PAIR", 0.3))
 TOOL_POOL = ["clock", "date", "calc", "remember", "read", "web"]   # откъдето идват случайните инструменти
 NO_TOOLS = "Инструменти: няма."
+NAME_P = float(os.environ.get("NAME_P", 0.3))                      # дял на копията с ред „Име: {име}.“ в системния ред
+NAME_LINE = "Име: {име}."
+TOOLS_PART = re.compile(r"Инструменти:\s*([^.]*)\.")
 
 ROLES = {"Система": "system", "Аз": "user", "Мисли": "think",
          "Инструмент": "tool", "Резултат": "result", "Амика": "amica"}
@@ -92,6 +101,23 @@ def parse(path):
     return conversations
 
 
+def resolve_same_as_previous(conversations):
+    """„Амика: =“ и „Мисли: =“ се заместват с k-тата реплика на същата роля от предишния разговор.
+    Върви по реда на файла, затова верига от „=“ в група формулировки стига до първия попълнен отговор."""
+    previous = None
+    for number, turns in conversations:
+        for role in ("amica", "think"):
+            mine = [t for t in turns if t["role"] == role]
+            theirs = [t for t in previous if t["role"] == role] if previous else []
+            for k, t in enumerate(mine):
+                if t["text"] == "=":
+                    if k < len(theirs):
+                        t["text"] = theirs[k]["text"]
+                    else:
+                        problems.append(f"conversation {number}: '=' but the previous conversation has no {role} line {k + 1}")
+        previous = turns
+
+
 def check(number, turns):
     # редът на репликите трябва да е такъв, какъвто го очакват chat_format.py и приложението
     roles = [t["role"] for t in turns]
@@ -126,7 +152,9 @@ def random_values(rng):
             "a": str(a), "b": str(b), "a*b": str(a * b), "a+b": str(a + b), "a-b": str(a - b),
             "m": str(m), "n": str(n), "n-m": str(n - m), "n+m": str(n + m),
             "град": rng.choice(CITIES), "прогноза": forecast,
-            "име": rng.choice(NAMES), "число": str(rng.randint(1, 1000))}
+            "име": (name := rng.choice(NAMES)),                     # потребителят: същото име и в „Име: {име}.“
+            "друг": rng.choice([n for n in NAMES if n != name]),   # друг човек в разговора, винаги различен от {име}
+            "число": str(rng.randint(1, 1000))}
 
 
 def fill(turns, values):
@@ -134,27 +162,40 @@ def fill(turns, values):
 
 
 def with_system(turns, rng):
-    # системният ред на това копие: обявените инструменти плюс случайни, или случаен списък
+    # системният ред на това копие: обявените инструменти плюс случайни, или случаен списък.
+    # От 2026-10-31 редът може да носи и „Име: {име}.“ (приложението го слага от memory.txt): ако го има в
+    # разговора, се пази; ако го няма, влиза с вероятност NAME_P, за да се среща и където не значи нищо,
+    # както при списъка с инструменти. Шаблонът се пълни после от fill(), затова with_system върви преди него.
     turns = [dict(t) for t in turns]
-    if turns[0]["role"] == "system":
-        if turns[0]["text"].strip() == NO_TOOLS:
-            return turns
-        declared = [x.strip(" .") for x in turns[0]["text"].split(":", 1)[1].split(",")]
-        extra = [x for x in TOOL_POOL if x not in declared]
-        rng.shuffle(extra)
-        tools = declared + extra[:rng.randint(0, 2)]
+    text = turns[0]["text"] if turns[0]["role"] == "system" else ""
+    m = TOOLS_PART.search(text)
+    extra = TOOLS_PART.sub("", text).strip()                      # останалото в реда, например „Име: {име}.“
+    if m and m.group(1).strip() == "няма":
+        line = NO_TOOLS
+    elif m:
+        declared = [x.strip() for x in m.group(1).split(",") if x.strip()]
+        pool = [x for x in TOOL_POOL if x not in declared]
+        rng.shuffle(pool)
+        tools = declared + pool[:rng.randint(0, 2)]
         rng.shuffle(tools)
-        turns[0]["text"] = "Инструменти: " + ", ".join(tools) + "."
+        line = "Инструменти: " + ", ".join(tools) + "."
+    else:
+        pool = TOOL_POOL[:]
+        rng.shuffle(pool)
+        tools = sorted(pool[:rng.randint(0, 4)])
+        line = "Инструменти: " + ", ".join(tools) + "." if tools else NO_TOOLS
+    if "Име:" not in extra and rng.random() < NAME_P:
+        extra = (extra + " " + NAME_LINE).strip()
+    line = (line + " " + extra).strip()
+    if turns[0]["role"] == "system":
+        turns[0]["text"] = line
         return turns
-    pool = TOOL_POOL[:]
-    rng.shuffle(pool)
-    tools = sorted(pool[:rng.randint(0, 4)])
-    line = "Инструменти: " + ", ".join(tools) + "." if tools else NO_TOOLS
     return [{"role": "system", "text": line}] + turns
 
 
 if __name__ == "__main__":
     conversations = parse(SOURCE)
+    resolve_same_as_previous(conversations)      # първо „=“, после проверката: оставено „=“ не стига до данните
     for number, turns in conversations:
         check(number, turns)
     if problems:
@@ -173,7 +214,7 @@ if __name__ == "__main__":
             if turns[0]["role"] != "system" and number % 10 != 7 and rng.random() < PAIR:
                 partner = rng.choice([c for c in free if c[0] != number])
             pair = turns + partner[1] if partner else turns
-            copy = with_system(fill(pair, random_values(rng)), rng)
+            copy = fill(with_system(pair, rng), random_values(rng))   # първо системният ред, после шаблоните и в него
             key = json.dumps(copy, ensure_ascii=False)
             if key in seen:
                 continue                                   # еднакво копие, без шаблони и със същия системен ред

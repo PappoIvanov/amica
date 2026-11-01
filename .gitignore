@@ -6,6 +6,7 @@ __pycache__/
 data/raw/*
 !data/raw/.gitkeep
 !data/raw/literature.txt
+!data/raw/razgovori.txt
 data/clean/*
 !data/clean/.gitkeep
 checkpoints/*

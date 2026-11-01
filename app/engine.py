@@ -64,6 +64,17 @@ TOOLS = {"clock": tool_clock, "date": tool_date, "calc": tool_calc}
 MAX_ROUNDS = 4   # най-много толкова реплики на Амика (мисли и извиквания) преди отговор
 
 
+def name_from_memory(path):
+    """Името от реда „Име: Павел“ в memory.txt или None; ползва се от desktop.py и talk.py за системния ред."""
+    try:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.lower().startswith("име:"):
+                return line.split(":", 1)[1].strip() or None
+    except OSError:
+        pass
+    return None
+
+
 class Engine:
     def __init__(self, checkpoint, temperature=0.2, top_k=10, repetition_penalty=1.3, max_tokens=120):
         # temperature 0.2 вместо 0.4 от 2026-10-26: при 0.4 Амика преписва часа от резултата в 1 от 4 случая,
@@ -77,9 +88,11 @@ class Engine:
         self.temperature, self.top_k = temperature, top_k
         self.repetition_penalty, self.max_tokens = repetition_penalty, max_tokens
 
-    def system_turn(self):
-        # същият ред, който стои в razgovori.txt: Амика знае само обявените инструменти
-        return {"role": "system", "text": "Инструменти: " + ", ".join(TOOLS) + "."}
+    def system_turn(self, name=None):
+        # същият ред, който стои в razgovori.txt: Амика знае само обявените инструменти; от 2026-10-31 и
+        # „Име: Павел.“ от memory.txt, за да поздравява по име (в данните е „Име: {име}.“ в част от копията)
+        text = "Инструменти: " + ", ".join(TOOLS) + "."
+        return {"role": "system", "text": text + (f" Име: {name}." if name else "")}
 
     @torch.no_grad()
     def generate_turn(self, turns):
