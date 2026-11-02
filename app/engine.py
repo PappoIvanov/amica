@@ -83,7 +83,7 @@ class Engine:
         self.model = Amica(Config(**ckpt["config"]))
         self.model.load_state_dict(ckpt["state_dict"])
         self.model.eval()
-        self.bpe = load_tokenizer()
+        self.bpe = load_tokenizer(ROOT / "tokenizer" / ckpt["tokenizer"])
         self.special = self.bpe.special
         self.temperature, self.top_k = temperature, top_k
         self.repetition_penalty, self.max_tokens = repetition_penalty, max_tokens

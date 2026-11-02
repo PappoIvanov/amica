@@ -50,7 +50,8 @@ EVAL_EVERY = int(os.environ.get("EVAL_EVERY", 50))
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ---- данни ----
-bpe = load_tokenizer()
+ckpt = torch.load(BASE, map_location="cpu")
+bpe = load_tokenizer(ROOT / "tokenizer" / ckpt["tokenizer"])
 END, DOC = bpe.special["<|end|>"], bpe.special["<|doc|>"]
 records = [json.loads(line) for line in open(DIALOGUES, encoding="utf-8")]
 
@@ -145,7 +146,6 @@ def reply(model, turns, max_tokens=60, temperature=0.7):
 
 
 # ---- модел ----
-ckpt = torch.load(BASE, map_location="cpu")
 cfg = Config(**ckpt["config"])
 model = Amica(cfg).to(DEVICE)
 model.load_state_dict(ckpt["state_dict"])

@@ -9,10 +9,13 @@
 При дообучаване загубата брои само това, което Амика пише: нейния текст, нейните <|tool|> и <|end|>.
 Затова encode_conversation връща и маска: 1 за токените, които се учат, 0 за контекста.
 
-Служебни токени (номерата са фиксирани, 8184 е <|doc|> от етап 4):
-  8185 <|user|>  8186 <|amica|>  8187 <|end|>  8188 <|tool|>  8189 <|result|>  8190 <|system|>  8191 <|think|>
-Пускане от папката на проекта: py tokenizer/chat_format.py
-При първото пускане добавя седемте токена в tokenizer/amica_bpe.json; после само показва примера.
+Служебни токени: осемте имена в SPECIAL, в този ред, винаги последните осем номера на речника.
+Номерата не са записани в кода, а идват от json-а на токенизатора (от 2026-11-02, за v4):
+  речник 8192 (amica_bpe.json, v2 и v3): 8184 <|doc|> ... 8191 <|think|>
+  речник 16 384 (amica_bpe_16k.json, v4): 16 376 <|doc|> ... 16 383 <|think|>
+Кой токенизатор се ползва го казва checkpoint-ът на модела (полето "tokenizer"), не този файл.
+Пускане от папката на проекта: py tokenizer/chat_format.py [amica_bpe_16k.json]
+При първото пускане добавя липсващите служебни токени във файла; после само показва примера.
 """
 import sys
 from pathlib import Path
@@ -21,15 +24,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))   # за да наме�
 from bpe import BPE
 
 ROOT = Path(__file__).resolve().parents[1]
-TOKENIZER = ROOT / "tokenizer" / "amica_bpe.json"
+TOKENIZER = ROOT / "tokenizer" / "amica_bpe.json"          # по подразбиране старият речник; v4 подава своя
 SPECIAL = ["<|doc|>", "<|user|>", "<|amica|>", "<|end|>", "<|tool|>", "<|result|>", "<|system|>", "<|think|>"]
-FIRST_SPECIAL = 8184
 ROLE_TOKEN = {"system": "<|system|>", "user": "<|user|>", "amica": "<|amica|>", "result": "<|result|>"}
 AMICA_KINDS = {"think": "<|think|>", "tool": "<|tool|>"}   # реплики на Амика с маркер след <|amica|>
 
 
 def load_tokenizer(path=TOKENIZER):
-    """Зарежда токенизатора и гарантира, че осемте служебни токена са в него с точните номера."""
+    """Зарежда токенизатора и гарантира, че осемте служебни токена са в него, в реда на SPECIAL,
+    като последните осем номера на речника."""
     bpe = BPE.load(path)
     missing = [name for name in SPECIAL if name not in bpe.special]
     for name in missing:
@@ -38,7 +41,8 @@ def load_tokenizer(path=TOKENIZER):
         bpe.save(path)
         print(f"added {len(missing)} special tokens to {Path(path).name}")
     numbers = [bpe.special[name] for name in SPECIAL]
-    assert numbers == list(range(FIRST_SPECIAL, FIRST_SPECIAL + len(SPECIAL))), bpe.special
+    first = len(bpe.vocab) - len(SPECIAL)                    # 8184 при речник 8192, 16 376 при 16 384
+    assert numbers == list(range(first, first + len(SPECIAL))), bpe.special
     return bpe
 
 
@@ -74,9 +78,10 @@ def prompt_ids(bpe, turns):
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    bpe = load_tokenizer()
-    print("special tokens:", ", ".join(f"{name}={bpe.special[name]}" for name in SPECIAL))
-    print(f"vocab: {len(bpe.vocab)} tokens\n")
+    path = ROOT / "tokenizer" / sys.argv[1] if len(sys.argv) > 1 else TOKENIZER
+    bpe = load_tokenizer(path)
+    print(f"tokenizer: {path.name}, vocab: {len(bpe.vocab)} tokens")
+    print("special tokens:", ", ".join(f"{name}={bpe.special[name]}" for name in SPECIAL), "\n")
 
     conversation = [
         {"role": "user", "text": "Колко е часът?"},
